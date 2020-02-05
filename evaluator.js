@@ -47,6 +47,10 @@ function is_tagged_list(stmt, the_tag) {
     return is_pair(stmt) && head(stmt) === the_tag;
 }
 
+function require(p) {
+    return ! p ? amb() : "some ordinary value";
+}
+
 /* AMB operator */
 function is_amb(stmt) {
     return is_tagged_list(stmt, "application") &&
