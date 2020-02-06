@@ -36,7 +36,8 @@ unop    ::= !
 function is_self_evaluating(stmt) {
     return is_number(stmt) ||
            is_string(stmt) || 
-           is_boolean(stmt);
+           is_boolean(stmt) ||
+           is_null(stmt);
 }
    
 // all other statements and expressions are
@@ -113,22 +114,6 @@ function analyze_name(stmt) {
     return (env, succeed, fail) => {
         succeed(lookup_name_value(name_of_name(stmt), env),
                 fail);
-    };
-}
-
-/* Lists */
-function is_list(stmt) {
-    return is_tagged_list(stmt, "array_expression");
-}
-
-function list_exp_list(stmt) {
-    return head(tail(stmt));
-}
-
-function analyze_list(stmt) {
-    const list_element_funcs = map(analyze, list_exp_list(stmt));
-    return (env, succeed, fail) => {
-        
     };
 }
 
@@ -802,6 +787,10 @@ const the_empty_environment = null;
 const primitive_functions = list(
        list("display",       display         ),
        list("error",         error           ),
+       list("list",          list            ),
+       list("pair",          pair            ),
+       list("head",          head            ),
+       list("tail",          tail            ),
        list("+",             (x,y) => x + y  ),
        list("-",             (x,y) => x - y  ),
        list("*",             (x,y) => x * y  ),
