@@ -841,27 +841,29 @@ function setup_environment() {
 
 const the_global_environment = setup_environment();
 
-function parse_and_eval(str) {
-    return eval_toplevel(parse(str));
+
+/* parse and eval */
+function no_current_problem() {
+    display("// There is no current problem");
 }
 
-/*
-examples:
-parse_and_eval("1;");
-parse_and_eval("1 + 1;");
-parse_and_eval("1 + 3 * 4;");
-parse_and_eval("(1 + 3) * 4;");
-parse_and_eval("1.4 / 2.3 + 70.4 * 18.3;");
+let try_again = no_current_problem;
 
-parse_and_eval("true;");
-parse_and_eval("! (1 === 1);");
-parse_and_eval("(! (1 === 1)) ? 1 : 2;");
+function parse_and_eval(input) {
+    const program_block = make_block(parse(input));
+    ambeval(program_block,
+        the_global_environment,
+        (val, next_alternative) => {
+            display(output_prompt + user_print(val));
+            try_again = next_alternative;
+        },
+        () => {
+            display("There are no more values of:");
+            display(input);
+            try_again = no_current_problem;
+        });
+}
 
-parse_and_eval("'hello' + ' ' + 'world';");
-
-parse_and_eval("function factorial(n) { return n === 1 ? 1 : n * factorial(n - 1);} factorial(4);");
-
-*/
 
 /* THE READ-EVAL-PRINT LOOP */
 
@@ -877,26 +879,8 @@ function user_print(object) {
        : stringify(object);
 }
 
-function read_eval_print_loop(history) {
-    const prog = prompt("History:" + history + 
-                        "\n\n" + "Enter next: ");
-    if (prog === null) {
-        display("session has ended");
-    } else {
-        const res = parse_and_eval(prog);
-        read_eval_print_loop(history + "\n" + 
-                             stringify(prog) + " ===> " +
-	                         stringify(user_print(res)));
-    }
-}
-
-/*
-read_eval_print_loop("");
-*/
-
-const input_prompt = "// Amb-Eval input:";
-
-const output_prompt =  "// Amb-Eval value:";
+const input_prompt = "input:";
+const output_prompt =  "result:";
 function driver_loop() {
     function internal_loop(try_again) {
         const input = prompt(input_prompt);
@@ -904,7 +888,7 @@ function driver_loop() {
             try_again();
         } else {
             const program_block = make_block(parse(input));
-            display("// Starting a new problem ");
+            display("Starting a new problem ");
             ambeval(program_block,
                 the_global_environment,
                 // ambeval success
@@ -914,7 +898,7 @@ function driver_loop() {
                 },
 		// ambeval failure
                 () => {
-                    display("// There are no more values of " + 
+                    display("There are no more values of " + 
                             user_print(input));
                     return driver_loop();
                 });
@@ -922,9 +906,9 @@ function driver_loop() {
     }
     return internal_loop(
                () => {
-                   display("// There is no current problem");
+                   display("There is no current problem");
                    return driver_loop();
                });
 }
 
-driver_loop();
+//driver_loop();
