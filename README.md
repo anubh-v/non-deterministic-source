@@ -1,6 +1,6 @@
 # non-deterministic-source
 
-# Run using `parse_and_eval`
+### Run using `parse_and_eval`
 
 Example:
 
@@ -27,7 +27,7 @@ try_again(); // result: 6
 ```
 
 
-Quick examples
+### Other quick examples
 
 ```
 const integer_from = n => amb(n, integer_from(n + 1)); integer_from(1);
