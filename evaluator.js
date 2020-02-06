@@ -36,7 +36,8 @@ unop    ::= !
 function is_self_evaluating(stmt) {
     return is_number(stmt) ||
            is_string(stmt) || 
-           is_boolean(stmt);
+           is_boolean(stmt) ||
+           is_null(stmt);
 }
    
 // all other statements and expressions are
