@@ -116,22 +116,6 @@ function analyze_name(stmt) {
     };
 }
 
-/* Lists */
-function is_list(stmt) {
-    return is_tagged_list(stmt, "array_expression");
-}
-
-function list_exp_list(stmt) {
-    return head(tail(stmt));
-}
-
-function analyze_list(stmt) {
-    const list_element_funcs = map(analyze, list_exp_list(stmt));
-    return (env, succeed, fail) => {
-        
-    };
-}
-
 /* CONSTANT DECLARATIONS */
 
 // constant declarations are tagged with "constant_declaration"
@@ -802,6 +786,10 @@ const the_empty_environment = null;
 const primitive_functions = list(
        list("display",       display         ),
        list("error",         error           ),
+       list("list",          list            ),
+       list("pair",          pair            ),
+       list("head",          head            ),
+       list("tail",          tail            ),
        list("+",             (x,y) => x + y  ),
        list("-",             (x,y) => x - y  ),
        list("*",             (x,y) => x * y  ),
