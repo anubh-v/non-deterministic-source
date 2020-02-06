@@ -534,7 +534,7 @@ function return_value_content(value) {
 function analyze_return_statement(stmt) {
     const retvalue_func = analyze(return_statement_expression(stmt));
     return (env, succeed, fail) => {
-        succeed(make_return_value(retvalue_func(env)), fail);
+        retvalue_func(env, succeed, fail);
     };
 }
 
