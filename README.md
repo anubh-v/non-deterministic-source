@@ -44,3 +44,11 @@ const f = amb(1, 2, 3); const g = amb(5, 6, 7); g;
 // Result: 5, 6, 7, 5, 6, 7, 5, 6, 7
 ```
 
+### Running Tests
+
+1. Copy the code from the following files into the playground:
+    * `evaluator.js`
+    * `test.js`
+    * `source-test/main.js`
+
+2. Remove one of the two instances of the repeated function `variable_declaration_name` (from `evaluator.js` and `source-test/main.js`)
