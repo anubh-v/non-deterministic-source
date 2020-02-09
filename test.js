@@ -77,7 +77,7 @@ function test_nondet_require() {
 }
 
 /**
- * Tests whether multiple amb statements give all combinations.
+ * Tests whether multiple amb statements give all combinations, in the right order.
 */
 function test_nondet_combinations() {
     parse_and_eval("list(amb(1, 2, 3), amb('a', 'b'));");
