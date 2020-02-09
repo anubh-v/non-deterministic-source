@@ -1,20 +1,33 @@
 /* 1. Integration Tests */
 
 /* 1.1 Test Deterministic Functionality */
+
 function test_self_evaluating() {
-
-}
-
-function test_functions() {
-
-}
-
-function test_conditional_expressions() {
-
+	parse_and_eval("4;");
+	assert_equal(4, final_result);
 }
 
 function test_assignment() {
+	parse_and_eval("const a = 23; a;");
+	assert_equal(23, final_result);
+}
 
+function test_conditional_expressions() {
+	parse_and_eval("100 % 2 === 0 ? true: false;");
+	assert_equal(true, final_result);
+
+	parse_and_eval("100 % 2 !== 0 ? true: false;");
+	assert_equal(false, final_result);
+}
+
+function test_function() {
+	parse_and_eval("const f = () => (x, y) => x + y; f()(12, 13);");
+	assert_equal(25, final_result);
+}
+
+function test_subfunction() {
+	parse_and_eval("function f(x) { function g(y) { return y * 2; } return x * g(10); } f(6);");
+	assert_equal(120, final_result);
 }
 
 /* 1.2 Test Non-Deterministic Functionality */
@@ -100,6 +113,11 @@ function test_nondet_undo() {
 
 run(
     list(
+    	test_self_evaluating,
+    	test_assignment,
+    	test_conditional_expressions,
+    	test_function,
+    	test_subfunction,
         test_nondet_empty,
         test_nondet_infinite,
         test_nondet_require,
