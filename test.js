@@ -30,6 +30,24 @@ function test_subfunction() {
 	assert_equal(120, final_result);
 }
 
+function test_binary_boolean_operations() {
+    parse_and_eval("true && (false || true) && (true && false);");
+    assert_equal(false, final_result);
+}
+
+function test_shortcircuiting() {
+    parse_and_eval("function foo() { return foo(); }\
+                    true || foo();"
+    );
+
+    assert_equal(true, final_result);
+    parse_and_eval("function foo() { return foo(); }\
+                    false && foo();"
+    );
+
+    assert_equal(false, final_result);
+}
+
 /* 1.2 Test Non-Deterministic Functionality */
 
 /**
@@ -64,14 +82,18 @@ function test_nondet_require() {
             return low > high ? amb() : amb(low, int_between(low + 1, high)); \
         } \
         function is_divisible_by_3(x) { return (x % 3) === 0;} \
-        let integer = int_between(4, 10); \
-        require(is_divisible_by_3(integer)); \
+        function is_even(x) { return (x % 2) === 0;} \
+        function is_one(x) { return x === 1;}\
+        let integer = int_between(1, 12); \
+        require(is_one(integer) || (is_even(integer) && is_divisible_by_3(integer))); \
         integer;"
     );
 
+    assert_equal(1, final_result);
+    try_again();
     assert_equal(6, final_result);
     try_again();
-    assert_equal(9, final_result);
+    assert_equal(12, final_result);
     try_again();
     assert_equal(null, final_result);
 }
@@ -117,7 +139,8 @@ run(
     	test_assignment,
     	test_conditional_expressions,
     	test_function,
-    	test_subfunction,
+        test_subfunction,
+        test_shortcircuiting,
         test_nondet_empty,
         test_nondet_infinite,
         test_nondet_require,

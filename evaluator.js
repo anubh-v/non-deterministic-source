@@ -330,6 +330,55 @@ function analyze_sequence(stmts) {
 
 }
 
+/* BOOLEAN OPERATIONS (&& and ||) */
+
+function is_boolean_operation(stmt) {
+    return is_tagged_list(stmt, "boolean_operation");
+}
+
+function name_of_boolean_op(stmt) {
+    return head(tail(head(tail(stmt))));
+}
+
+function boolean_op_left_arg(stmt) {
+    return list_ref(head(tail(tail(stmt))), 0);
+}
+
+function boolean_op_right_arg(stmt) {
+    return list_ref(head(tail(tail(stmt))), 1);
+}
+
+function analyze_boolean_op(stmt) {
+    const left_hand_expr_func = analyze(boolean_op_left_arg(stmt));
+    const right_hand_expr_func = analyze(boolean_op_right_arg(stmt));
+
+    return name_of_boolean_op(stmt) === "&&"
+        ? analyze_logical_and(left_hand_expr_func, right_hand_expr_func)
+        : analyze_logical_or(left_hand_expr_func, right_hand_expr_func);
+}
+
+function analyze_logical_and(left_hand_expr_func, right_hand_expr_func) {
+    return (env, succeed, fail) => {
+        left_hand_expr_func(env,
+                           (val, fail2) => {
+                               val ? right_hand_expr_func(env, succeed, fail2)
+                                   : succeed(false, fail2);
+                           },
+                           fail);
+    };
+}
+
+function analyze_logical_or(left_hand_expr_func, right_hand_expr_func) {
+    return (env, succeed, fail) => {
+        left_hand_expr_func(env,
+                           (val, fail2) => {
+                               val ? succeed(true, fail2)
+                                   : right_hand_expr_func(env, succeed, fail2);
+                           },
+                           fail);
+    };
+}
+
 /* FUNCTION APPLICATION */
 
 // The core of our evaluator is formed by the
@@ -750,6 +799,8 @@ function analyze(stmt) {
            ? analyze_require(stmt)
          : is_application(stmt)
            ? analyze_application(stmt)
+         : is_boolean_operation(stmt)
+           ? analyze_boolean_op(stmt)
            : error(stmt, "Unknown statement type in analyze");
 }
 
