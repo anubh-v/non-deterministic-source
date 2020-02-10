@@ -8,12 +8,12 @@ carry out simple arithmetic calculations, boolean operations.
 
 The covered Source §1 sublanguage is:
 
-stmt    ::= const name = expr ; 
-         |  let name = expr ; 
+stmt    ::= const name = expr ;
+         |  let name = expr ;
          |  function name(params) block
-         |  expr ; 
+         |  expr ;
          |  stmt stmt
-         |  name = expr ; 
+         |  name = expr ;
          |  block
 block   ::= { stmt }
 expr    ::= expr ? expr : expr
@@ -22,7 +22,7 @@ expr    ::= expr ? expr : expr
          |  name
          |  number
          |  expr(expr, expr, ...)
-binop   ::= + | - | * | / | % | < | > | <= | >= 
+binop   ::= + | - | * | / | % | < | > | <= | >=
          | === | !== |  && | ||
 unop    ::= !
 */
@@ -32,14 +32,14 @@ unop    ::= !
 // constants (numbers, strings, booleans)
 // are considered "self_evaluating". This means, they
 // represent themselves in the syntax tree
-      
+
 function is_self_evaluating(stmt) {
     return is_number(stmt) ||
-           is_string(stmt) || 
+           is_string(stmt) ||
            is_boolean(stmt) ||
            is_null(stmt);
 }
-   
+
 // all other statements and expressions are
 // tagged lists. Their tag tells us what
 // kind of statement/expression they are
@@ -49,9 +49,9 @@ function is_tagged_list(stmt, the_tag) {
 }
 
 /* AMB operator */
-function is_amb(stmt) {      
-    return is_tagged_list(stmt, "application") && 
-           is_name(operator(stmt)) && 
+function is_amb(stmt) {
+    return is_tagged_list(stmt, "application") &&
+           is_name(operator(stmt)) &&
            name_of_name(operator(stmt)) === "amb";
 }
 function amb_choices(stmt) {
@@ -74,20 +74,20 @@ function analyze_amb(exp) {
 }
 
 function is_require(stmt) {
-    return is_tagged_list(stmt, "application") && 
-           is_name(operator(stmt)) && 
-           name_of_name(operator(stmt)) === "require";    
+    return is_tagged_list(stmt, "application") &&
+           is_name(operator(stmt)) &&
+           name_of_name(operator(stmt)) === "require";
 }
 
 function analyze_require(stmt) {
     const pred_func = analyze(head(operands(stmt)));
     return (env, succeed, fail) => {
-        pred_func(env, 
-                  (pred_value, fail2) => pred_value 
+        pred_func(env,
+                  (pred_value, fail2) => pred_value
                                          ? succeed("satisfied require", fail2)
                                          : fail2(),
                   fail);
-                                        
+
     };
 }
 
@@ -98,7 +98,7 @@ function analyze_require(stmt) {
 
 // Names are tagged with "name".
 // In this evaluator, typical names
-// are 
+// are
 // list("name", "+")
 // list("name", "factorial")
 // list("name", "n")
@@ -131,7 +131,7 @@ function constant_declaration_name(stmt) {
 function constant_declaration_value(stmt) {
    return head(tail(tail(stmt)));
 }
-      
+
 // evaluation of a constant declaration evaluates
 // the right-hand expression and binds the
 // name to the resulting value in the
@@ -140,7 +140,7 @@ function constant_declaration_value(stmt) {
 function analyze_constant_declaration(stmt) {
     const name = constant_declaration_name(stmt);
     const value_func = analyze(constant_declaration_value(stmt));
-    
+
     return (env, succeed, fail) => {
         value_func(env,
                    (value, fail2) => {
@@ -149,7 +149,7 @@ function analyze_constant_declaration(stmt) {
                    },
                    fail);
     };
-    
+
 }
 
 /* VARIABLE DECLARATIONS */
@@ -167,24 +167,24 @@ function variable_declaration_value(stmt) {
 function analyze_variable_declaration(stmt) {
     const name = variable_declaration_name(stmt);
     const value_func = analyze(variable_declaration_value(stmt));
-    
+
     return (env, succeed, fail) => {
-        value_func(env, 
+        value_func(env,
                    (value, fail2) => {
                        set_name_value(name, value, env);
                        succeed("variable declared", fail2);
                    },
                    fail);
     };
-}   
-    
+}
+
 /* CONDITIONAL EXPRESSIONS */
 
 // conditional expressions are tagged
 // with "conditional_expression"
 
 function is_conditional_expression(stmt) {
-   return is_tagged_list(stmt, 
+   return is_tagged_list(stmt,
                 "conditional_expression");
 }
 function cond_expr_pred(stmt) {
@@ -205,13 +205,13 @@ function is_true(x) {
 // branch, depending on whether the predicate evaluates to
 // true or not
 function analyze_conditional_expression(stmt) {
-    
+
     const pred_func = analyze(cond_expr_pred(stmt));
     const cons_func = analyze(cond_expr_cons(stmt));
     const alt_func = analyze(cond_expr_alt(stmt));
-    
+
     return (env, succeed, fail) => {
-        pred_func(env, 
+        pred_func(env,
                   (pred_value, fail2) => {
                    pred_value ? cons_func(env, succeed, fail2)
                               : alt_func(env, succeed, fail2);
@@ -267,7 +267,7 @@ function analyze_function_definition(stmt) {
     const vars = function_definition_parameters(stmt);
     const locals = local_names(function_definition_body(stmt));
     const body_func = analyze(function_definition_body(stmt));
-    return (env, succeed, fail) => { 
+    return (env, succeed, fail) => {
         succeed(make_compound_function(vars, locals, body_func, env),
                 fail);
     };
@@ -284,7 +284,7 @@ function is_sequence(stmt) {
 function make_sequence(stmts) {
    return list("sequence", stmts);
 }
-function sequence_statements(stmt) {   
+function sequence_statements(stmt) {
    return head(tail(stmt));
 }
 function is_empty_sequence(stmts) {
@@ -302,10 +302,10 @@ function rest_statements(stmts) {
 
 // to evaluate a sequence, we need to evaluate
 // its statements one after the other, and return
-// the value of the last statement. 
+// the value of the last statement.
 // An exception to this rule is when a return
 // statement is encountered. In that case, the
-// remaining statements are ignored and the 
+// remaining statements are ignored and the
 // return value is the value of the sequence.
 
 function analyze_sequence(stmts) {
@@ -324,7 +324,7 @@ function analyze_sequence(stmts) {
                       tail(rest_funs));
     }
     const funs = map(analyze, stmts);
-    return is_null(funs) 
+    return is_null(funs)
            ? env => undefined
            : loop(head(funs), tail(funs));
 
@@ -355,8 +355,8 @@ function first_operand(ops) {
 function rest_operands(ops) {
    return tail(ops);
 }
-      
-// primitive functions are tagged with "primitive"      
+
+// primitive functions are tagged with "primitive"
 // and come with a Source function "implementation"
 
 function make_primitive_function(impl) {
@@ -388,7 +388,7 @@ function analyze_application(stmt) {
     };
 }
 
-function get_args(arg_funcs, env, succeed, fail) {      
+function get_args(arg_funcs, env, succeed, fail) {
     return is_null(arg_funcs)
         ? succeed(null, fail)
         : head(arg_funcs)(env,
@@ -413,14 +413,14 @@ function get_args(arg_funcs, env, succeed, fail) {
 function apply_primitive_function(fun, argument_list) {
     return apply_in_underlying_javascript(
                 primitive_implementation(fun),
-                argument_list);     
+                argument_list);
 }
-    
+
 // function application needs to distinguish between
 // primitive functions (which are evaluated using the
 // underlying JavaScript), and compound functions.
 // An application of the latter needs to evaluate the
-// body of the function value with respect to an 
+// body of the function value with respect to an
 // environment that results from extending the function
 // object's environment by a binding of the function
 // parameters to the arguments and of local names to
@@ -456,7 +456,7 @@ function execute_application(fun, args, succeed, fail) {
 // We use a nullary function as temporary value for names whose
 // declaration has not yet been evaluated. The purpose of the
 // function definition is purely to create a unique identity;
-// the function will never be applied and its return value 
+// the function will never be applied and its return value
 // (null) is irrelevant.
 const no_value_yet = () => null;
 
@@ -489,7 +489,7 @@ function local_names(stmt) {
              ? list(variable_declaration_name(stmt))
              : null;
     }
-}	     
+}
 
 /* RETURN STATEMENTS */
 
@@ -502,7 +502,7 @@ function is_return_statement(stmt) {
 function return_statement_expression(stmt) {
    return head(tail(stmt));
 }
-  
+
 // since return statements can occur anywhere in the
 // body, we need to identify them during the evaluation
 // process
@@ -537,13 +537,13 @@ function assignment_value(stmt) {
 function analyze_assignment(stmt) {
     const name = assignment_name(stmt);
     const value_func = analyze(assignment_value(stmt));
-    
+
     return (env, succeed, fail) => {
-        value_func(env, 
+        value_func(env,
                    (value, fail2) => {
                        const old_value = lookup_name_value(name, env);
                        assign_name_value(name, value, env);
-                       succeed("assignment ok", 
+                       succeed("assignment ok",
                                () => {
                                    assign_name_value(name, old_value, env);
                                    fail2();
@@ -576,7 +576,7 @@ function analyze_block(stmt) {
     const locals = local_names(block_body(stmt));
     const temp_values = map(x => no_value_yet,
                             locals);
-                            
+
     return (env, succeed, fail) => {
         return body(extend_environment(locals, temp_values, env), succeed, fail);
     };
@@ -585,7 +585,7 @@ function analyze_block(stmt) {
 /* ENVIRONMENTS */
 
 // frames are pairs with a list of names as head
-// an a list of pairs as tail (values). Each value 
+// an a list of pairs as tail (values). Each value
 // pair has the proper value as head and a flag
 // as tail, which indicates whether assignment
 // is allowed for the corresponding name
@@ -593,10 +593,10 @@ function analyze_block(stmt) {
 function make_frame(names, values) {
     return pair(names, values);
 }
-function frame_names(frame) {    
+function frame_names(frame) {
     return head(frame);
 }
-function frame_values(frame) {    
+function frame_values(frame) {
     return tail(frame);
 }
 
@@ -628,7 +628,7 @@ function set_name_value(name, val, env) {
             : name === head(names)
               ? set_head(head(vals), val)
               : scan(tail(names), tail(vals));
-    } 
+    }
     const frame = first_frame(env);
     return scan(frame_names(frame),
                 frame_values(frame));
@@ -681,7 +681,7 @@ function assign_name_value(name, val, env) {
                       : error("no assignment " +
                           "to constants allowed") )
                   : scan(tail(names), tail(vals));
-        } 
+        }
         if (is_empty_environment(env)) {
             error(name, "Unbound name in assignment: ");
         } else {
@@ -702,16 +702,16 @@ function assign_name_value(name, val, env) {
 function extend_environment(names, vals, base_env) {
     if (length(names) === length(vals)) {
         return enclose_by(
-                   make_frame(names, 
+                   make_frame(names,
                       map(x => pair(x, true), vals)),
                    base_env);
     } else if (length(names) < length(vals)) {
-        error("Too many arguments supplied: " + 
-              stringify(names) + ", " + 
+        error("Too many arguments supplied: " +
+              stringify(names) + ", " +
               stringify(vals));
     } else {
-        error("Too few arguments supplied: " + 
-              stringify(names) + ", " + 
+        error("Too few arguments supplied: " +
+              stringify(names) + ", " +
               stringify(vals));
     }
 }
@@ -767,7 +767,7 @@ function eval_toplevel(stmt) {
    // wrap program in block to create
    // program environment
    const program_block = make_block(stmt);
-   const value = ambeval(program_block, 
+   const value = ambeval(program_block,
                           the_global_environment);
    if (is_return_value(value)) {
        error("return not allowed " +
@@ -806,18 +806,18 @@ const primitive_functions = list(
        );
 
 // the global environment also has bindings for all
-// primitive non-function values, such as undefined and 
+// primitive non-function values, such as undefined and
 // math_PI
 
 const primitive_constants = list(
        list("undefined", undefined),
        list("math_PI"  , math_PI)
       );
-       
+
 // setup_environment makes an environment that has
 // one single frame, and adds a binding of all names
-// listed as primitive_functions and primitive_values. 
-// The values of primitive functions are "primitive" 
+// listed as primitive_functions and primitive_values.
+// The values of primitive functions are "primitive"
 // objects, see line 281 how such functions are applied
 
 function setup_environment() {
@@ -832,9 +832,9 @@ function setup_environment() {
         map(f => head(tail(f)),
             primitive_constants);
     return extend_environment(
-               append(primitive_function_names, 
+               append(primitive_function_names,
                       primitive_constant_names),
-               append(primitive_function_values, 
+               append(primitive_function_values,
                       primitive_constant_values),
                the_empty_environment);
 }
@@ -848,16 +848,18 @@ function no_current_problem() {
 }
 
 let try_again = no_current_problem;
-
+let final_result = null; // stores the final result of the program, simplifying testing.
 function parse_and_eval(input) {
     const program_block = make_block(parse(input));
     ambeval(program_block,
         the_global_environment,
         (val, next_alternative) => {
+            final_result = val;
             display(output_prompt + user_print(val));
             try_again = next_alternative;
         },
         () => {
+            final_result = null;
             display("There are no more values of:");
             display(input);
             try_again = no_current_problem;
@@ -898,7 +900,7 @@ function driver_loop() {
                 },
 		// ambeval failure
                 () => {
-                    display("There are no more values of " + 
+                    display("There are no more values of " +
                             user_print(input));
                     return driver_loop();
                 });
