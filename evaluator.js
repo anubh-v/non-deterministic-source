@@ -196,9 +196,6 @@ function cond_expr_cons(stmt) {
 function cond_expr_alt(stmt) {
    return list_ref(stmt, 3);
 }
-function is_true(x) {
-    return x === true;
-}
 
 // the meta-circular evaluation of conditional expressions
 // evaluates the predicate and then the appropriate
@@ -395,15 +392,6 @@ function operator(stmt) {
 function operands(stmt) {
    return head(tail(tail(stmt)));
 }
-function no_operands(ops) {
-   return is_null(ops);
-}
-function first_operand(ops) {
-   return head(ops);
-}
-function rest_operands(ops) {
-   return tail(ops);
-}
 
 // primitive functions are tagged with "primitive"
 // and come with a Source function "implementation"
@@ -486,17 +474,9 @@ function execute_application(fun, args, succeed, fail) {
       const temp_values = map(x => no_value_yet,
                               locals);
       const values = append(args, temp_values);
-      const result = body(extend_environment(
-                            names,
-                            values,
-                            function_environment(fun)),
-                          succeed,
-                          fail);
-      if (is_return_value(result)) {
-         return return_value_content(result);
-      } else {
-          return undefined;
-      }
+      body(extend_environment(names, values, function_environment(fun)),
+                              succeed,
+                              fail);
    } else {
       error(fun, "Unknown function type in apply");
    }
@@ -552,19 +532,6 @@ function return_statement_expression(stmt) {
    return head(tail(stmt));
 }
 
-// since return statements can occur anywhere in the
-// body, we need to identify them during the evaluation
-// process
-
-function make_return_value(content) {
-    return list("return_value", content);
-}
-function is_return_value(value) {
-    return is_tagged_list(value,"return_value");
-}
-function return_value_content(value) {
-    return head(tail(value));
-}
 function analyze_return_statement(stmt) {
     const retvalue_func = analyze(return_statement_expression(stmt));
     return (env, succeed, fail) => {
@@ -806,26 +773,6 @@ function analyze(stmt) {
 
 function ambeval(exp, env, succeed, fail) {
    return (analyze(exp))(env, succeed, fail);
-}
-
-// at the toplevel (outside of functions), return statements
-// are not allowed. The function evaluate_toplevel detects
-// return values and displays an error in when it encounters one.
-// The program statement is wrapped in a block, to create the
-// program environment.
-
-function eval_toplevel(stmt) {
-   // wrap program in block to create
-   // program environment
-   const program_block = make_block(stmt);
-   const value = ambeval(program_block,
-                          the_global_environment);
-   if (is_return_value(value)) {
-       error("return not allowed " +
-             "outside of function definitions");
-   } else {
-       return value;
-   }
 }
 
 /* THE GLOBAL ENVIRONMENT */
