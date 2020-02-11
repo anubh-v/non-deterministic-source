@@ -180,9 +180,6 @@ function cond_expr_cons(stmt) {
 function cond_expr_alt(stmt) {
    return list_ref(stmt, 3);
 }
-function is_true(x) {
-    return x === true;
-}
 
 // the meta-circular evaluation of conditional expressions
 // evaluates the predicate and then the appropriate
@@ -376,6 +373,19 @@ function operator(stmt) {
 }
 function operands(stmt) {
    return head(tail(tail(stmt)));
+}
+
+// primitive functions are tagged with "primitive"
+// and come with a Source function "implementation"
+
+function make_primitive_function(impl) {
+    return list("primitive", impl);
+}
+function is_primitive_function(fun) {
+   return is_tagged_list(fun, "primitive");
+}
+function primitive_implementation(fun) {
+   return list_ref(fun, 1);
 }
 
 function analyze_application(stmt) {
@@ -587,7 +597,7 @@ function analyze_block(stmt) {
                             locals);
 
     return (env, succeed, fail) => {
-        body(extend_environment(locals, temp_values, env), succeed, fail);
+        return body(extend_environment(locals, temp_values, env), succeed, fail);
     };
 }
 
@@ -841,7 +851,6 @@ function no_current_problem() {
 let try_again = no_current_problem;
 let final_result = null; // stores the final result of the program, useful for testing.
 
-/* To
 function parse_and_eval(input) {
     const program_block = make_block(parse(input));
     ambeval(program_block,
