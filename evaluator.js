@@ -1,35 +1,12 @@
 /*
-Evaluator for language with booleans, conditionals,
-sequences, functions, constants, variables and blocks
+Evaluator for a non-deterministic language with booleans, conditionals,
+sequences, functions, constants, variables and blocks.
 
-This is an evaluator for a language that lets you declare
-functions, variables and constants, apply functions, and
-carry out simple arithmetic calculations, boolean operations.
+(examples available on our github repo)
 
-The covered Source §1 sublanguage is:
+/* CONSTANTS: NUMBERS, STRINGS, TRUE, FALSE, NULL */
 
-stmt    ::= const name = expr ;
-         |  let name = expr ;
-         |  function name(params) block
-         |  expr ;
-         |  stmt stmt
-         |  name = expr ;
-         |  block
-block   ::= { stmt }
-expr    ::= expr ? expr : expr
-         |  expr binop expr
-         |  unop expr
-         |  name
-         |  number
-         |  expr(expr, expr, ...)
-binop   ::= + | - | * | / | % | < | > | <= | >=
-         | === | !== |  && | ||
-unop    ::= !
-*/
-
-/* CONSTANTS: NUMBERS, STRINGS, TRUE, FALSE */
-
-// constants (numbers, strings, booleans)
+// constants (numbers, strings, booleans, null)
 // are considered "self_evaluating". This means, they
 // represent themselves in the syntax tree
 
@@ -48,12 +25,15 @@ function is_tagged_list(stmt, the_tag) {
     return is_pair(stmt) && head(stmt) === the_tag;
 }
 
-/* AMB operator */
+/* AMB OPERATOR */
+/* The amb operator accepts a number of arguments
+   and ambiguously returns one of them. */
 function is_amb(stmt) {
     return is_tagged_list(stmt, "application") &&
            is_name(operator(stmt)) &&
            name_of_name(operator(stmt)) === "amb";
 }
+
 function amb_choices(stmt) {
     return operands(stmt);
 }
@@ -73,6 +53,10 @@ function analyze_amb(exp) {
     };
 }
 
+/* REQUIRE OPERATOR */
+/* The require operator verifies whether a certain predicate is satisfied.
+   If the predicate is not satisfied, the require operator forces
+   the evaluator to backtrack and retrieve the next possible value. */
 function is_require(stmt) {
     return is_tagged_list(stmt, "application") &&
            is_name(operator(stmt)) &&
@@ -381,8 +365,6 @@ function analyze_logical_or(left_hand_expr_func, right_hand_expr_func) {
 
 /* FUNCTION APPLICATION */
 
-// The core of our evaluator is formed by the
-// implementation of function applications.
 // Applications are tagged with "application"
 // and have "operator" and "operands"
 
@@ -394,28 +376,6 @@ function operator(stmt) {
 }
 function operands(stmt) {
    return head(tail(tail(stmt)));
-}
-function no_operands(ops) {
-   return is_null(ops);
-}
-function first_operand(ops) {
-   return head(ops);
-}
-function rest_operands(ops) {
-   return tail(ops);
-}
-
-// primitive functions are tagged with "primitive"
-// and come with a Source function "implementation"
-
-function make_primitive_function(impl) {
-    return list("primitive", impl);
-}
-function is_primitive_function(fun) {
-   return is_tagged_list(fun, "primitive");
-}
-function primitive_implementation(fun) {
-   return list_ref(fun, 1);
 }
 
 function analyze_application(stmt) {
@@ -453,27 +413,37 @@ function get_args(arg_funcs, env, succeed, fail) {
 		                  fail);
 }
 
-/* APPLY */
+// primitive functions are tagged with "primitive"
+// and come with a Source function "implementation"
 
-// apply_in_underlying_javascript allows us
-// to make use of JavaScript's primitive functions
-// in order to access operators such as addition
-
-function apply_primitive_function(fun, argument_list) {
-    return apply_in_underlying_javascript(
-                primitive_implementation(fun),
-                argument_list);
+function make_primitive_function(impl) {
+    return list("primitive", impl);
 }
+function is_primitive_function(fun) {
+   return is_tagged_list(fun, "primitive");
+}
+function primitive_implementation(fun) {
+   return list_ref(fun, 1);
+}
+
+
+/* APPLY */
 
 // function application needs to distinguish between
 // primitive functions (which are evaluated using the
 // underlying JavaScript), and compound functions.
-// An application of the latter needs to evaluate the
-// body of the function value with respect to an
+
+// Just like deterministic Source, 
+// application of compound functions is done by evaluating the
+// body of the function with respect to an
 // environment that results from extending the function
 // object's environment by a binding of the function
 // parameters to the arguments and of local names to
-// the special value no_value_yet
+// the special value no_value_yet.
+
+// One difference is that we do not return the result of function
+// application. Instead, we rely on the "succeed" continuation
+// to use the result.
 
 function execute_application(fun, args, succeed, fail) {
    if (is_primitive_function(fun)) {
@@ -486,21 +456,24 @@ function execute_application(fun, args, succeed, fail) {
       const temp_values = map(x => no_value_yet,
                               locals);
       const values = append(args, temp_values);
-      const result = body(extend_environment(
-                            names,
-                            values,
-                            function_environment(fun)),
-                          succeed,
-                          fail);
-      if (is_return_value(result)) {
-         return return_value_content(result);
-      } else {
-          return undefined;
-      }
+      body(extend_environment(names, values, function_environment(fun)),
+           succeed,
+           fail);
    } else {
       error(fun, "Unknown function type in apply");
    }
 }
+
+// apply_in_underlying_javascript allows us
+// to make use of JavaScript's primitive functions
+// in order to access operators such as addition
+
+function apply_primitive_function(fun, argument_list) {
+    return apply_in_underlying_javascript(
+                primitive_implementation(fun),
+                argument_list);
+}
+
 
 // We use a nullary function as temporary value for names whose
 // declaration has not yet been evaluated. The purpose of the
@@ -552,19 +525,6 @@ function return_statement_expression(stmt) {
    return head(tail(stmt));
 }
 
-// since return statements can occur anywhere in the
-// body, we need to identify them during the evaluation
-// process
-
-function make_return_value(content) {
-    return list("return_value", content);
-}
-function is_return_value(value) {
-    return is_tagged_list(value,"return_value");
-}
-function return_value_content(value) {
-    return head(tail(value));
-}
 function analyze_return_statement(stmt) {
     const retvalue_func = analyze(return_statement_expression(stmt));
     return (env, succeed, fail) => {
@@ -627,7 +587,7 @@ function analyze_block(stmt) {
                             locals);
 
     return (env, succeed, fail) => {
-        return body(extend_environment(locals, temp_values, env), succeed, fail);
+        body(extend_environment(locals, temp_values, env), succeed, fail);
     };
 }
 
@@ -770,7 +730,7 @@ function extend_environment(names, vals, base_env) {
 // invokes the appropriate analysis. Analysing a statement
 // will return a function that accepts an environment
 // and returns the value of the statement. Note that some
-// statements may only have side effects and no value (e.g. assignment).
+// statements may have side effects in addition to the value returned (e.g. assignment).
 
 function analyze(stmt) {
     return is_self_evaluating(stmt)
@@ -806,26 +766,6 @@ function analyze(stmt) {
 
 function ambeval(exp, env, succeed, fail) {
    return (analyze(exp))(env, succeed, fail);
-}
-
-// at the toplevel (outside of functions), return statements
-// are not allowed. The function evaluate_toplevel detects
-// return values and displays an error in when it encounters one.
-// The program statement is wrapped in a block, to create the
-// program environment.
-
-function eval_toplevel(stmt) {
-   // wrap program in block to create
-   // program environment
-   const program_block = make_block(stmt);
-   const value = ambeval(program_block,
-                          the_global_environment);
-   if (is_return_value(value)) {
-       error("return not allowed " +
-             "outside of function definitions");
-   } else {
-       return value;
-   }
 }
 
 /* THE GLOBAL ENVIRONMENT */
@@ -893,13 +833,15 @@ function setup_environment() {
 const the_global_environment = setup_environment();
 
 
-/* parse and eval */
+/* Some global variables that help the `parse_and_eval` function */
 function no_current_problem() {
     display("// There is no current problem");
 }
 
 let try_again = no_current_problem;
-let final_result = null; // stores the final result of the program, simplifying testing.
+let final_result = null; // stores the final result of the program, useful for testing.
+
+/* To
 function parse_and_eval(input) {
     const program_block = make_block(parse(input));
     ambeval(program_block,
@@ -917,9 +859,6 @@ function parse_and_eval(input) {
         });
 }
 
-
-/* THE READ-EVAL-PRINT LOOP */
-
 // The function user_print is necessary to
 // avoid infinite recursion when printing
 // circular environments
@@ -934,6 +873,8 @@ function user_print(object) {
 
 const input_prompt = "input:";
 const output_prompt =  "result:";
+
+/* THE READ-EVAL-PRINT LOOP */
 function driver_loop() {
     function internal_loop(try_again) {
         const input = prompt(input_prompt);
