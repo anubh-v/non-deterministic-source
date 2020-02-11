@@ -10,10 +10,8 @@ Generate even integers between 0 and 10 (inclusive).
 parse_and_eval("function int_between(low, high) {\
                     return low > high ? amb() : amb(low, int_between(low + 1, high));\
                 }\
-                \
                 function is_even(x) { return (x % 2) === 0;}\
-                function divisible_by_three(x) { return (x % 3) === 0;}
-                \
+                function divisible_by_three(x) { return (x % 3) === 0;}\
                 let integer = int_between(0, 12);\
                 require(is_even(integer) || divisible_by_three(integer));\
                 integer;");
