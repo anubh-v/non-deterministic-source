@@ -1,5 +1,7 @@
 # non-deterministic-source
 
+Implementation is in: [evaluator.js](evaluator.js)
+
 ### Run using `parse_and_eval`
 
 Example:
