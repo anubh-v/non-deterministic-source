@@ -60,3 +60,8 @@ parse_and_eval("const f = amb(1, 2, 3); const g = amb(5, 6, 7); g;");
     * `source-test/main.js`
 
 2. Remove one of the two instances of the repeated function `variable_declaration_name` (from `evaluator.js` and `source-test/main.js`)
+
+### Acknowledgements
+This metacircular evaluator is built based on [SICP JS, Chapter 4.3](https://sicp.comp.nus.edu.sg/chapters/85)
+
+It also uses the `parse` function of the [Source Academy](https://github.com/source-academy/js-slang)
