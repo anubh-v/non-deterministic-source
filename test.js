@@ -70,7 +70,7 @@ function test_nondet_infinite() {
 
     for (let i = 1; i <= 10; i=i+1) {
         assert_equal(i, final_result);
-        try_again();
+        final_result = try_again();
     }
 }
 
@@ -90,11 +90,11 @@ function test_nondet_require() {
     );
 
     assert_equal(1, final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(6, final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(12, final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(null, final_result);
 }
 
@@ -105,17 +105,17 @@ function test_nondet_combinations() {
     parse_and_eval("list(amb(1, 2, 3), amb('a', 'b'));");
 
     assert_equal(list(1, "a"), final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(list(1, "b"), final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(list(2, "a"), final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(list(2, "b"), final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(list(3, "a"), final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(list(3, "b"), final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(null, final_result);
 }
 
@@ -129,7 +129,7 @@ function test_nondet_undo() {
     ");
 
     assert_equal(10, final_result);
-    try_again();
+    final_result = try_again();
     assert_equal(5, final_result);
 }
 
