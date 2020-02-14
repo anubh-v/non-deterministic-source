@@ -844,6 +844,9 @@ function parse_and_eval(input) {
         (val, next_alternative) => {
             final_result = val;
             display(output_prompt + user_print(val));
+
+            // assign a function to try_again so that when called,
+            // the result value is returned
             try_again = () => {
               next_alternative();
               return final_result;
