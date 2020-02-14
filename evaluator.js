@@ -429,7 +429,7 @@ function get_args(arg_funcs, env, succeed, fail) {
 // primitive functions (which are evaluated using the
 // underlying JavaScript), and compound functions.
 
-// Just like deterministic Source, 
+// Just like deterministic Source,
 // application of compound functions is done by evaluating the
 // body of the function with respect to an
 // environment that results from extending the function
@@ -721,6 +721,18 @@ function extend_environment(names, vals, base_env) {
     }
 }
 
+// updates the environment, storing it
+// in a global variable before calling the
+// given execution function in order for the REPL to
+// be able to access names declared in previous statements
+
+function update_exec_env(exec_func) {
+    return (env, succeed, fail) => {
+      updated_env = env;
+      exec_func(env, succeed, fail);
+    };
+}
+
 // The workhorse of our evaluator is the analyze function.
 // It dispatches on the kind of statement at hand, and
 // invokes the appropriate analysis. Analysing a statement
@@ -729,7 +741,7 @@ function extend_environment(names, vals, base_env) {
 // statements may have side effects in addition to the value returned (e.g. assignment).
 
 function analyze(stmt) {
-    return is_self_evaluating(stmt)
+    const exec_func = is_self_evaluating(stmt)
            ? (env, succeed, fail) => succeed(stmt, fail)
          : is_name(stmt)
            ? analyze_name(stmt)
@@ -758,6 +770,8 @@ function analyze(stmt) {
          : is_boolean_operation(stmt)
            ? analyze_boolean_op(stmt)
            : error(stmt, "Unknown statement type in analyze");
+
+    return update_exec_env(exec_func);
 }
 
 function ambeval(exp, env, succeed, fail) {
@@ -869,6 +883,8 @@ function user_print(object) {
 const input_prompt = "input:";
 const output_prompt =  "result:";
 
+let updated_env = the_global_environment; // used to keep memory in REPL
+
 /* THE READ-EVAL-PRINT LOOP */
 function driver_loop() {
     function internal_loop(try_again) {
@@ -879,7 +895,7 @@ function driver_loop() {
             const program_block = make_block(parse(input));
             display("Starting a new problem ");
             ambeval(program_block,
-                the_global_environment,
+                updated_env,
                 // ambeval success
                 (val, next_alternative) => {
                     display(output_prompt + user_print(val));
