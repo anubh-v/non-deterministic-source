@@ -1,9 +1,7 @@
 /*
 Evaluator for a non-deterministic language with booleans, conditionals,
 sequences, functions, constants, variables and blocks.
-
 (examples available on our github repo)
-
 /* CONSTANTS: NUMBERS, STRINGS, TRUE, FALSE, NULL */
 
 // constants (numbers, strings, booleans, null)
@@ -45,9 +43,9 @@ function analyze_amb(exp) {
             return is_null(choices)
                 ? fail()
                 : head(choices)(env,
-		                succeed,
+                    succeed,
                                 () =>
-    	                        try_next(tail(choices)));
+                              try_next(tail(choices)));
         }
         return try_next(cfuns);
     };
@@ -128,7 +126,7 @@ function analyze_constant_declaration(stmt) {
     return (env, succeed, fail) => {
         value_func(env,
                    (value, fail2) => {
-                    set_name_value(name, value, env);
+                    set_name_value(name, value, env, true);
                     succeed("constant declared", fail2);
                    },
                    fail);
@@ -155,7 +153,7 @@ function analyze_variable_declaration(stmt) {
     return (env, succeed, fail) => {
         value_func(env,
                    (value, fail2) => {
-                       set_name_value(name, value, env);
+                       set_name_value(name, value, env, false);
                        succeed("variable declared", fail2);
                    },
                    fail);
@@ -412,15 +410,15 @@ function get_args(arg_funcs, env, succeed, fail) {
         ? succeed(null, fail)
         : head(arg_funcs)(env,
                          // success continuation for this arg_func
-	                      (arg, fail2) => {
-		                     get_args(tail(arg_funcs),
+                        (arg, fail2) => {
+                         get_args(tail(arg_funcs),
                                       env,
-				                      (args, fail3) => {
-				                          succeed(pair(arg, args),fail3);
-				                      },
-			                          fail2);
-	                      },
-		                  fail);
+                              (args, fail3) => {
+                                  succeed(pair(arg, args),fail3);
+                              },
+                                fail2);
+                        },
+                      fail);
 }
 
 /* APPLY */
@@ -429,7 +427,7 @@ function get_args(arg_funcs, env, succeed, fail) {
 // primitive functions (which are evaluated using the
 // underlying JavaScript), and compound functions.
 
-// Just like deterministic Source, 
+// Just like deterministic Source,
 // application of compound functions is done by evaluating the
 // body of the function with respect to an
 // environment that results from extending the function
@@ -499,7 +497,7 @@ function local_names(stmt) {
             : insert_all(
                   local_names(first_statement(stmts)),
                   local_names(make_sequence(
-		               rest_statements(stmts))));
+                   rest_statements(stmts))));
     } else {
        return is_constant_declaration(stmt)
            ? list(constant_declaration_name(stmt))
@@ -622,16 +620,21 @@ function is_empty_environment(env) {
    return is_null(env);
 }
 
+function set_value(vals, val, is_constant) {
+    set_head(head(vals), val);
+    set_tail(vals, append(tail(vals), is_constant));
+}
+
 // set_name_value is used for let and const to give
 // the initial value to the name in the first
 // (innermost) frame of the given environment
 
-function set_name_value(name, val, env) {
+function set_name_value(name, val, env, is_constant) {
     function scan(names, vals) {
         return is_null(names)
             ? error("internal error: name not found")
             : name === head(names)
-              ? set_head(head(vals), val)
+              ? set_value(vals, val, is_constant)
               : scan(tail(names), tail(vals));
     }
     const frame = first_frame(env);
@@ -659,11 +662,11 @@ function lookup_name_value(name, env) {
             const frame = first_frame(env);
             const value =  scan(frame_names(frame),
                                 frame_values(frame));
-	    if (value === no_value_yet) {
+      if (value === no_value_yet) {
                 error(name, "Name used before declaration: ");
             } else {
-	        return value;
-	    }
+          return value;
+      }
         }
     }
     return env_loop(env);
@@ -681,7 +684,7 @@ function assign_name_value(name, val, env) {
                 ? env_loop(
                     enclosing_environment(env))
                 : name === head(names)
-                  ? ( tail(head(vals))
+                  ? (tail(head(vals)) && !tail(vals)
                       ? set_head(head(vals), val)
                       : error("no assignment " +
                           "to constants allowed") )
@@ -885,7 +888,7 @@ function driver_loop() {
                     display(output_prompt + user_print(val));
                     return internal_loop(next_alternative);
                 },
-		// ambeval failure
+    // ambeval failure
                 () => {
                     display("There are no more values of " +
                             user_print(input));
