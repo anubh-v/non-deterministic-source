@@ -6,7 +6,7 @@ Implementation is in: [evaluator.js](evaluator.js)
 
 Example:
 
-Find integers between 0 and 12 (inclusive) that are divisible by 2 and 3.
+Find integers between 0 and 12 (inclusive) that are divisible by 2 or 3.
 
 ```js
 parse_and_eval("function int_between(low, high) {\
