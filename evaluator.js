@@ -126,7 +126,7 @@ function analyze_constant_declaration(stmt) {
     return (env, succeed, fail) => {
         value_func(env,
                    (value, fail2) => {
-                    set_name_value(name, value, env, true);
+                    set_name_value(name, value, env, false);
                     succeed("constant declared", fail2);
                    },
                    fail);
@@ -153,7 +153,7 @@ function analyze_variable_declaration(stmt) {
     return (env, succeed, fail) => {
         value_func(env,
                    (value, fail2) => {
-                       set_name_value(name, value, env, false);
+                       set_name_value(name, value, env, true);
                        succeed("variable declared", fail2);
                    },
                    fail);
@@ -623,23 +623,23 @@ function is_empty_environment(env) {
 // set_value is used for setting a given value
 // at the head of given list, as well as to
 // store a boolean indicating whether the name of
-// the given value was declared as a constant or not
+// the given value was declared as a variable or not
 
-function set_value(vals, val, is_constant) {
+function set_value(vals, val, is_variable) {
     set_head(head(vals), val);
-    set_tail(vals, append(tail(vals), is_constant));
+    set_tail(head(vals), is_variable);
 }
 
 // set_name_value is used for let and const to give
 // the initial value to the name in the first
 // (innermost) frame of the given environment
 
-function set_name_value(name, val, env, is_constant) {
+function set_name_value(name, val, env, is_variable) {
     function scan(names, vals) {
         return is_null(names)
             ? error("internal error: name not found")
             : name === head(names)
-              ? set_value(vals, val, is_constant)
+              ? set_value(vals, val, is_variable)
               : scan(tail(names), tail(vals));
     }
     const frame = first_frame(env);
@@ -689,7 +689,7 @@ function assign_name_value(name, val, env) {
                 ? env_loop(
                     enclosing_environment(env))
                 : name === head(names)
-                  ? (tail(head(vals)) && !tail(vals) // the name should not have been declared as a constant
+                  ? (tail(head(vals)) // the name should not have been declared as a constant
                       ? set_head(head(vals), val)
                       : error("no assignment " +
                           "to constants allowed") )
