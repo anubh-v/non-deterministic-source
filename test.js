@@ -3,31 +3,31 @@
 /* 1.1 Test Deterministic Functionality */
 
 function test_self_evaluating() {
-	parse_and_eval("4;");
-	assert_equal(4, final_result);
+    parse_and_eval("4;");
+    assert_equal(4, final_result);
 }
 
 function test_assignment() {
-	parse_and_eval("const a = 23; a;");
-	assert_equal(23, final_result);
+    parse_and_eval("const a = 23; a;");
+    assert_equal(23, final_result);
 }
 
 function test_conditional_expressions() {
-	parse_and_eval("100 % 2 === 0 ? true: false;");
-	assert_equal(true, final_result);
+    parse_and_eval("100 % 2 === 0 ? true: false;");
+    assert_equal(true, final_result);
 
-	parse_and_eval("100 % 2 !== 0 ? true: false;");
-	assert_equal(false, final_result);
+    parse_and_eval("100 % 2 !== 0 ? true: false;");
+    assert_equal(false, final_result);
 }
 
 function test_function() {
-	parse_and_eval("const f = () => (x, y) => x + y; f()(12, 13);");
-	assert_equal(25, final_result);
+    parse_and_eval("const f = () => (x, y) => x + y; f()(12, 13);");
+    assert_equal(25, final_result);
 }
 
 function test_subfunction() {
-	parse_and_eval("function f(x) { function g(y) { return y * 2; } return x * g(10); } f(6);");
-	assert_equal(120, final_result);
+    parse_and_eval("function f(x) { function g(y) { return y * 2; } return x * g(10); } f(6);");
+    assert_equal(120, final_result);
 }
 
 function test_binary_boolean_operations() {
@@ -90,12 +90,9 @@ function test_nondet_require() {
     );
 
     assert_equal(1, final_result);
-    final_result = try_again();
-    assert_equal(6, final_result);
-    final_result = try_again();
-    assert_equal(12, final_result);
-    final_result = try_again();
-    assert_equal(null, final_result);
+    assert_equal(6, try_again());
+    assert_equal(12, try_again());
+    assert_equal(null, try_again());
 }
 
 /**
@@ -105,18 +102,12 @@ function test_nondet_combinations() {
     parse_and_eval("list(amb(1, 2, 3), amb('a', 'b'));");
 
     assert_equal(list(1, "a"), final_result);
-    final_result = try_again();
-    assert_equal(list(1, "b"), final_result);
-    final_result = try_again();
-    assert_equal(list(2, "a"), final_result);
-    final_result = try_again();
-    assert_equal(list(2, "b"), final_result);
-    final_result = try_again();
-    assert_equal(list(3, "a"), final_result);
-    final_result = try_again();
-    assert_equal(list(3, "b"), final_result);
-    final_result = try_again();
-    assert_equal(null, final_result);
+    assert_equal(list(1, "b"), try_again());
+    assert_equal(list(2, "a"), try_again());
+    assert_equal(list(2, "b"), try_again());
+    assert_equal(list(3, "a"), try_again());
+    assert_equal(list(3, "b"), try_again());
+    assert_equal(null, try_again());
 }
 
 /**
@@ -135,10 +126,10 @@ function test_nondet_undo() {
 
 run(
     list(
-    	test_self_evaluating,
-    	test_assignment,
-    	test_conditional_expressions,
-    	test_function,
+        test_self_evaluating,
+        test_assignment,
+        test_conditional_expressions,
+        test_function,
         test_subfunction,
         test_shortcircuiting,
         test_nondet_empty,
