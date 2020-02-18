@@ -429,7 +429,7 @@ function get_args(arg_funcs, env, succeed, fail) {
 // primitive functions (which are evaluated using the
 // underlying JavaScript), and compound functions.
 
-// Just like deterministic Source, 
+// Just like deterministic Source,
 // application of compound functions is done by evaluating the
 // body of the function with respect to an
 // environment that results from extending the function
@@ -844,7 +844,13 @@ function parse_and_eval(input) {
         (val, next_alternative) => {
             final_result = val;
             display(output_prompt + user_print(val));
-            try_again = next_alternative;
+
+            // assign a function to try_again so that when called,
+            // the result value is returned
+            try_again = () => {
+              next_alternative();
+              return final_result;
+            };
         },
         () => {
             final_result = null;
