@@ -620,21 +620,21 @@ function is_empty_environment(env) {
    return is_null(env);
 }
 
-// set_value is used for setting a given value
-// at the head of given list, as well as to
-// store a boolean indicating whether the name of
-// the given value was declared as a variable or not
-
-function set_value(vals, val, is_variable) {
-    set_head(head(vals), val);
-    set_tail(head(vals), is_variable);
-}
-
 // set_name_value is used for let and const to give
 // the initial value to the name in the first
 // (innermost) frame of the given environment
 
 function set_name_value(name, val, env, is_variable) {
+    // set_value is used for setting a given value
+    // at the head of given list, as well as to
+    // store a boolean indicating whether the name of
+    // the given value was declared as a variable or not
+
+    function set_value(vals, val, is_variable) {
+        set_head(head(vals), val);
+        set_tail(head(vals), is_variable);
+    }
+
     function scan(names, vals) {
         return is_null(names)
             ? error("internal error: name not found")
@@ -689,8 +689,8 @@ function assign_name_value(name, val, env) {
                 ? env_loop(
                     enclosing_environment(env))
                 : name === head(names)
-                  ? (tail(head(vals)) // the name should not have been declared as a constant
-                      ? set_head(head(vals), val)
+                  ? (tail(head(vals))
+                      ? set_head(head(vals), val) // the name was declared as a variable
                       : error("no assignment " +
                           "to constants allowed") )
                   : scan(tail(names), tail(vals));
