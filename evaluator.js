@@ -776,6 +776,17 @@ function ambeval(exp, env, succeed, fail) {
 
 const the_empty_environment = null;
 
+// the minus operation is overloaded to
+// support both binary and unary minus
+
+function minus(x, y) {
+    if (is_number(x) && is_number(y)) {
+      return x - y;
+    } else {
+      return -x;
+    }
+}
+
 // the global environment has bindings for all
 // primitive functions, including the operators
 
@@ -787,7 +798,7 @@ const primitive_functions = list(
        list("head",          head            ),
        list("tail",          tail            ),
        list("+",             (x,y) => x + y  ),
-       list("-",             (x,y) => x - y  ),
+       list("-",             (x,y) => minus(x, y)  ),
        list("*",             (x,y) => x * y  ),
        list("/",             (x,y) => x / y  ),
        list("%",             (x,y) => x % y  ),

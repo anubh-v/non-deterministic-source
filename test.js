@@ -7,6 +7,14 @@ function test_self_evaluating() {
     assert_equal(4, final_result);
 }
 
+function test_unary_minus() {
+    parse_and_eval("6 * -1;");
+    assert_equal(-6, final_result);
+
+    parse_and_eval("-12 - 8;");
+    assert_equal(-20, final_result);
+}
+
 function test_assignment() {
     parse_and_eval("const a = 23; a;");
     assert_equal(23, final_result);
@@ -127,6 +135,7 @@ function test_nondet_undo() {
 run(
     list(
         test_self_evaluating,
+        test_unary_minus,
         test_assignment,
         test_conditional_expressions,
         test_function,
