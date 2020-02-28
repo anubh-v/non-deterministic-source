@@ -132,6 +132,23 @@ function test_nondet_undo() {
     assert_equal(5, final_result);
 }
 
+/**
+ * Test whether a function value can be obtained non-deterministically.
+ */
+function test_nondet_functionval() {
+    parse_and_eval("\
+        const is_even = num => num % 2;
+        const add_five = num => num + 5;
+        const nondet_func = amb(is_even, add_five, is_list, is_number);
+        nondet_func(5);
+    ");
+
+    assert_equal(false, final_result);
+    assert_equal(10, try_again());
+    assert_equal(false, try_again());
+    assert_equal(true, try_again());
+}
+
 run(
     list(
         test_self_evaluating,
