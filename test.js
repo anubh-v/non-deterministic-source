@@ -143,15 +143,15 @@ function test_nondet_undo() {
  */
 function test_amb_in_return_stmt() {
     parse_and_eval("function f(x) {\
-        return amb(x, list(1,2,3), x*2);\
+        return amb(x*2, list(1,2,3), 'test_string');\
         const f = amb(10, 20);\
         f;\
     }\
     f(4);");
 
-    assert_equal(4, final_result);
+    assert_equal(8, final_result);
     assert_equal(list(1,2,3), try_again());
-    assert_equal(8, try_again());
+    assert_equal("test_string", try_again());
     assert_equal(null, try_again());
 }
 
