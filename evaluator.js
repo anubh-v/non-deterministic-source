@@ -280,19 +280,22 @@ function rest_statements(stmts) {
 }
 
 // to evaluate a sequence, we need to evaluate
-// its statements one after the other, and return
-// the value of the last statement.
+// its statements one after the other. We pass the
+// success continuation to the last statement,
+// because the value of a sequence
+// is the value of its last statement.
+
 // An exception to this rule is when a return
 // statement is encountered. In that case, the
 // remaining statements are ignored and the
-// return value is the value of the sequence.
+// success continuation is called with the return value.
 
 function analyze_sequence(stmts) {
     function sequentially(fun1, fun2) {
         return (env, succeed, fail) => {
                    fun1(env,
                         (fun1_val, fail2) => {
-                            if is_return_value(fun1_val) {
+                            if (is_return_value(fun1_val)) {
                                 succeed(fun1_val, fail2);
                             } else {
                                 fun2(env, succeed, fail2);
@@ -461,7 +464,7 @@ function execute_application(fun, args, succeed, fail) {
       const values = append(args, temp_values);
       body(extend_environment(names, values, function_environment(fun)),
            (val, fail2) => {
-               if is_return_value(val) {
+               if (is_return_value(val)) {
                    succeed(return_value_content(val), fail2);
                } else {
                    succeed(undefined, fail2);
