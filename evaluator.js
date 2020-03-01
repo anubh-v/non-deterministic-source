@@ -806,6 +806,7 @@ function distinct(items) {
 
 const primitive_functions = list(
        list("distinct",      distinct        ),
+       list("math_abs",      math_abs        ),
        list("display",       display         ),
        list("error",         error           ),
        list("list",          list            ),
