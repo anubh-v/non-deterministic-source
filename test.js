@@ -60,7 +60,7 @@ function test_shortcircuiting() {
 
 /**
  * Multiple Dwelling Puzzle
- * Taken from sicpjs section 4.3.2
+ * Taken from SICP JS section 4.3.2
 */
 function test_nondet_multiple_dwelling() {
     parse_and_eval("\

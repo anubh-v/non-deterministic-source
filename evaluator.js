@@ -790,6 +790,7 @@ function minus(x, y) {
 
 /* DISTINCT */
 /* The distinct function checks whether the items in a list are unique. */
+/* Taken from SICP JS section 4.3.2 */
 
 function distinct(items) {
     return is_null(items)
