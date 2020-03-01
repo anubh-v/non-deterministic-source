@@ -2,7 +2,7 @@
  * Multiple Dwelling Puzzle
  * Taken from SICP JS section 4.3.2
 */
-function test_nondet_multiple_dwelling() {
+function multiple_dwelling() {
     parse_and_eval("\
         function multiple_dwelling() {\
             const baker = amb(1, 2, 3, 4, 5);\
