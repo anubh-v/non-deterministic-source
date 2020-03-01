@@ -787,10 +787,27 @@ function minus(x, y) {
     }
 }
 
+
+/* DISTINCT */
+/* The distinct function checks whether the items in a list are unique. */
+/* Taken from SICP JS section 4.3.2 */
+
+function distinct(items) {
+    return is_null(items)
+        ? true
+        : is_null(tail(items))
+          ? true
+          : is_null(member(head(items), tail(items)))
+            ? distinct(tail(items))
+            : false;
+}
+
 // the global environment has bindings for all
 // primitive functions, including the operators
 
 const primitive_functions = list(
+       list("distinct",      distinct        ),
+       list("math_abs",      math_abs        ),
        list("display",       display         ),
        list("error",         error           ),
        list("list",          list            ),
