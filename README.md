@@ -51,9 +51,9 @@ display(Q, 'Q:'); \
 display(R, 'R:'); \
 display(S, 'S:'); \
 ");
-```
 
-Use `try_again()` to view all satisfying assignments.
+// use `try_again()` to view all satisfying assignments.
+```
 
 ```js
 parse_and_eval("const integer_from = n => amb(n, integer_from(n + 1)); integer_from(1);");
