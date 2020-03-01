@@ -33,8 +33,25 @@ try_again(); // result: 12
 try_again(); // result: null
 ```
 
-
 ### Other quick examples
+```js
+/* SAT solving */
+parse_and_eval("\
+let P = amb(true, false); \
+let Q = amb(true, false); \
+let R = amb(true, false); \
+let S = amb(true, false); \
+\
+let formula = (P || !Q || R) && (!P || Q || S) && (Q || !S) && (R || S) && (P || !R); \
+require(formula === true); \
+\
+display('Satisfying Assignment:');\
+display(P, 'P:'); \
+display(Q, 'Q:'); \
+display(R, 'R:'); \
+display(S, 'S:'); \
+");
+```
 
 ```js
 parse_and_eval("const integer_from = n => amb(n, integer_from(n + 1)); integer_from(1);");
