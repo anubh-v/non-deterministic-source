@@ -56,6 +56,14 @@ function test_shortcircuiting() {
     assert_equal(false, final_result);
 }
 
+function test_distinct() {
+    parse_and_eval("distinct(list(1, 2, list(2)));");
+    assert_equal(true, final_result);
+
+    parse_and_eval("distinct(list(4, 5, (() => 5)()));");
+    assert_equal(false, final_result);
+}
+
 /* 1.2 Test Non-Deterministic Functionality */
 
 /**
@@ -172,6 +180,7 @@ run(
         test_function,
         test_subfunction,
         test_shortcircuiting,
+        test_distinct,
         test_nondet_empty,
         test_nondet_infinite,
         test_nondet_require,
