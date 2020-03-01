@@ -133,7 +133,7 @@ function test_nondet_undo() {
 }
 
 /**
- * Test whether a function value can be obtained non-deterministically.
+ * Tests whether a function value can be obtained non-deterministically.
  */
 function test_nondet_functionval() {
     parse_and_eval("\
