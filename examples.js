@@ -4,6 +4,21 @@
  */
 
 /**
+ * Returns any integer greater than or equal to a given n.
+ * Taken from SICP JS 4.3.1
+ */
+function an_integer_starting_from() {
+    parse_and_eval("\
+        function an_integer_starting_from(n) {\
+            return amb(n, an_integer_starting_from(n + 1));\
+        }\
+        \
+        an_integer_starting_from(1);\
+        // gives 1 followed by 2, 3, 4, ... using the try_again function\
+    ");
+}
+
+/**
  * Ambiguously returns an element from a list or
  * fails if the list is empty.
  * Taken from SICP JS 4.3.1
@@ -63,7 +78,7 @@ function an_integer_between() {
  * Finds Pythagorean triples between the given bounds (inclusive).
  * Taken from SICP JS Exercise 4.26
  */
-function a_pythogorean_triple_between() {
+function a_pythagorean_triple_between() {
     parse_and_eval("\
         function an_integer_between(low, high) {\
             return low > high ? amb() : amb(low + 1, an_integer_between(low, high));\
