@@ -56,7 +56,7 @@ parse_and_eval("const f = amb(1, 2, 3); const g = amb(5, 6, 7); g;");
 
 ### Running Tests
 
-1. Copy the code from the following files into the playground:
+1. Copy the code from the following files into the [playground](https://sourceacademy.nus.edu.sg/playground):
     * `evaluator.js`
     * `test.js`
     * `source-test/main.js`

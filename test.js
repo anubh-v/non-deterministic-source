@@ -155,6 +155,23 @@ function test_amb_in_return_stmt() {
     assert_equal(null, try_again());
 }
 
+/**
+ * Tests whether a function value can be obtained non-deterministically.
+ */
+function test_nondet_functionval() {
+    parse_and_eval("\
+        const is_even = num => (num % 2) === 0;\
+        const add_five = num => num + 5;\
+        const nondet_func = amb(is_even, add_five, num => !is_even(num));\
+        nondet_func(5);\
+    ");
+
+    assert_equal(false, final_result);
+    assert_equal(10, try_again());
+    assert_equal(true, try_again());
+    assert_equal(null, try_again());
+}
+
 run(
     list(
         test_self_evaluating,
@@ -170,6 +187,7 @@ run(
         test_nondet_require,
         test_nondet_combinations,
         test_nondet_undo,
-        test_amb_in_return_stmt
+        test_amb_in_return_stmt,
+        test_nondet_functionval
    ), null, null, null
 );
