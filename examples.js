@@ -22,7 +22,7 @@ function an_element_of() {
 
 /**
  * Finds a pair of integers, each from a single list each
- * whose sum is prime
+ * whose sum is prime.
  * Taken from SICP JS 4.3.1
  */
 function prime_sum_pair() {
@@ -41,5 +41,42 @@ function prime_sum_pair() {
         \
         prime_sum_pair(list(1, 2, 3), list(4, 5, 6));\
         // gives list(1, 4) followed by list(1, 6), list(2, 5) and list(3, 4) using the try_again function\
+    ");
+}
+
+/**
+ * Returns an integer between two given bounds (inclusive).
+ * SICP JS Exercise 4.26
+ */
+function an_integer_between() {
+    parse_and_eval("\
+        function an_integer_between(low, high) {\
+            return low > high ? amb() : amb(low + 1, an_integer_between(low, high));\
+        }\
+        \
+        an_integer_between(5, 10);\
+        // gives 5, followed by 7, 8, 9 and 10 using the try_again function\
+    ");
+}
+
+/**
+ * Finds Pythagorean triples between the given bounds (inclusive).
+ * Taken from SICP JS Exercise 4.26
+ */
+function a_pythogorean_triple_between() {
+    parse_and_eval("\
+        function an_integer_between(low, high) {\
+            return low > high ? amb() : amb(low + 1, an_integer_between(low, high));\
+        }\
+        \
+        function a_pythagorean_triple_between(low, high) {\
+            const i = an_integer_between(low, high);\
+            const j = an_integer_between(i, high);\
+            const k = an_integer_between(j, high);\
+            require(i * i + j * j === k * k);\
+            return list(i, j, k);\
+        }\
+        \
+        a_pythagorean_triple_between(3, 5);\
     ");
 }
