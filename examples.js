@@ -1,3 +1,8 @@
+/* 
+   Each of the functions below make use of the parse_and_eval function of the
+   non-deterministic MCE in order to run a program that is presented in SICP JS.
+*/
+
 /**
  * Multiple Dwelling Puzzle
  * Taken from SICP JS section 4.3.2
