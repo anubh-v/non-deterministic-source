@@ -21,7 +21,7 @@ function an_element_of() {
 }
 
 /**
- * Finds a pair of integers, each from a single list each
+ * Finds a pair of integers, each from a single list
  * whose sum is prime
  * Taken from SICP JS 4.3.1
  */
