@@ -787,6 +787,33 @@ function minus(x, y) {
     }
 }
 
+/* PRIMALITY TESTING */
+/* the following set of functions enable testing of whether a number is prime */
+/* Taken from SICP JS 1.2.6 */
+
+function square(x) {
+    return x * x;
+}
+                
+function smallest_divisor(n) {
+    return find_divisor(n, 2);
+}
+
+function find_divisor(n, test_divisor) {
+     return square(test_divisor) > n
+            ? n
+            : divides(test_divisor, n)
+              ? test_divisor
+              : find_divisor(n, test_divisor + 1);
+}
+
+function divides(a, b) {
+    return b % a === 0;
+}
+          
+function is_prime(n) {
+    return n === smallest_divisor(n);
+}
 
 /* DISTINCT */
 /* The distinct function checks whether the items in a list are unique. */
@@ -806,6 +833,8 @@ function distinct(items) {
 // primitive functions, including the operators
 
 const primitive_functions = list(
+       list("is_null",       is_null         ),
+       list("is_prime",      is_prime        ),
        list("distinct",      distinct        ),
        list("math_abs",      math_abs        ),
        list("display",       display         ),
