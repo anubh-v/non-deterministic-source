@@ -813,6 +813,19 @@ function divides(a, b) {
           
 function is_prime(n) {
     return n === smallest_divisor(n);
+
+/* DISTINCT */
+/* The distinct function checks whether the items in a list are unique. */
+/* Taken from SICP JS section 4.3.2 */
+
+function distinct(items) {
+    return is_null(items)
+        ? true
+        : is_null(tail(items))
+          ? true
+          : is_null(member(head(items), tail(items)))
+            ? distinct(tail(items))
+            : false;
 }
 
 // the global environment has bindings for all
@@ -821,6 +834,8 @@ function is_prime(n) {
 const primitive_functions = list(
        list("is_null",       is_null         ),
        list("is_prime",      is_prime        ),
+       list("distinct",      distinct        ),
+       list("math_abs",      math_abs        ),
        list("display",       display         ),
        list("error",         error           ),
        list("list",          list            ),
