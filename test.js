@@ -38,6 +38,11 @@ function test_subfunction() {
     assert_equal(120, final_result);
 }
 
+function test_function_without_return_stmt() {
+    parse_and_eval("function f(x) { 4; x + 4; 10;} f(5);");
+    assert_equal(undefined, final_result);
+}
+
 function test_binary_boolean_operations() {
     parse_and_eval("true && (false || true) && (true && false);");
     assert_equal(false, final_result);
@@ -141,6 +146,24 @@ function test_nondet_undo() {
 }
 
 /**
+ * Tests whether an amb application can be used in a return statement,
+ * and tests that statements after a return statement are ignored.
+ */
+function test_amb_in_return_stmt() {
+    parse_and_eval("function f(x) {\
+        return amb(x*2, list(1,2,3), 'test_string');\
+        const f = amb(10, 20);\
+        f;\
+    }\
+    f(4);");
+
+    assert_equal(8, final_result);
+    assert_equal(list(1,2,3), try_again());
+    assert_equal("test_string", try_again());
+    assert_equal(null, try_again());
+}
+
+/**
  * Tests whether a function value can be obtained non-deterministically.
  */
 function test_nondet_functionval() {
@@ -165,6 +188,7 @@ run(
         test_conditional_expressions,
         test_function,
         test_subfunction,
+        test_function_without_return_stmt,
         test_shortcircuiting,
         test_distinct,
         test_nondet_empty,
@@ -172,6 +196,7 @@ run(
         test_nondet_require,
         test_nondet_combinations,
         test_nondet_undo,
+        test_amb_in_return_stmt,
         test_nondet_functionval
    ), null, null, null
 );
