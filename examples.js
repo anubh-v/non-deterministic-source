@@ -1,7 +1,6 @@
-/* 
-
-    Each of the functions below make use of the parse_and_eval function of the
-    non-deterministic MCE in order to run a program that is presented in SICP JS.
+/** 
+ * Each of the functions below make use of the parse_and_eval function of the
+ * non-deterministic MCE in order to run a program that is presented in SICP JS.
  */
 
 /**
@@ -67,7 +66,7 @@ function prime_sum_pair() {
 function an_integer_between() {
     parse_and_eval("\
         function an_integer_between(low, high) {\
-            return low > high ? amb() : amb(low + 1, an_integer_between(low, high));\
+            return low > high ? amb() : amb(low, an_integer_between(low + 1, high));\
         }\
         \
         an_integer_between(5, 10);\
