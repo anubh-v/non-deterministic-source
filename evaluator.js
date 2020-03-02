@@ -813,6 +813,7 @@ function divides(a, b) {
           
 function is_prime(n) {
     return n === smallest_divisor(n);
+}
 
 /* DISTINCT */
 /* The distinct function checks whether the items in a list are unique. */
