@@ -34,7 +34,7 @@ expr    ::= expr ? expr : expr
          |  amb(expr, expr,  ...)
 binop   ::= + | - | * | / | % | < | > | <= | >= 
          | === | !== |  && | ||
-unop    ::= !
+unop    ::= ! | -
 
 
 A caveat about Source 4.3: literal lists
