@@ -473,15 +473,15 @@ function get_args(arg_funcs, env, succeed, fail) {
         ? succeed(null, fail)
         : head(arg_funcs)(env,
                          // success continuation for this arg_func
-                        (arg, fail2) => {
-                         get_args(tail(arg_funcs),
+                         (arg, fail2) => {
+                             get_args(tail(arg_funcs),
                                       env,
-                              (args, fail3) => {
-                                  succeed(pair(arg, args),fail3);
-                              },
-                                fail2);
-                        },
-                      fail);
+                                      (args, fail3) => {
+                                          succeed(pair(arg, args), fail3);
+                                      },
+                                      fail2);
+                         },
+                         fail);
 }
 
 /* APPLY */
