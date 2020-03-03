@@ -499,7 +499,7 @@ function get_args(arg_funcs, env, succeed, fail) {
 // the special value no_value_yet.
 
 // One difference is that we do not return the result of function
-// application. Instead, we rely on the "succeed" continuation
+// application. Instead, we rely on the success continuation
 // to use the result.
 
 // Just like deterministic Source, a function application returns
