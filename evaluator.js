@@ -820,9 +820,9 @@ function extend_environment(names, vals, base_env) {
 
 // The workhorse of our evaluator is the analyze function.
 // It dispatches on the kind of statement at hand, and
-// invokes the appropriate analysis. Analysing a statement
-// will return a function that accepts an environment
-// and returns the value of the statement. Note that some
+// invokes the appropriate analysis. Analysing a statement / expression
+// will return an execution function that accepts an environment
+// and returns the value of the statement / expression. Note that some
 // statements may have side effects in addition to the value returned (e.g. assignment).
 
 function analyze(stmt) {
