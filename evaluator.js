@@ -583,7 +583,10 @@ function analyze_block(stmt) {
                             locals);
 
     return (env, succeed, fail) => {
-        return body(extend_environment(locals, temp_values, env), succeed, fail);
+	const extended_environment = extend_environment(locals, temp_values, env);
+	// store the new environment to be able to reuse it - enables the REPL to have memory
+	updated_env = extended_environment; 
+        return body(extended_environment, succeed, fail);
     };
 }
 
@@ -721,18 +724,6 @@ function extend_environment(names, vals, base_env) {
     }
 }
 
-// updates the environment, storing it
-// in a global variable before calling the
-// given execution function in order for the REPL to
-// be able to access names declared in previous statements
-
-function update_exec_env(exec_func) {
-    return (env, succeed, fail) => {
-      updated_env = env;
-      exec_func(env, succeed, fail);
-    };
-}
-
 // The workhorse of our evaluator is the analyze function.
 // It dispatches on the kind of statement at hand, and
 // invokes the appropriate analysis. Analysing a statement
@@ -741,7 +732,7 @@ function update_exec_env(exec_func) {
 // statements may have side effects in addition to the value returned (e.g. assignment).
 
 function analyze(stmt) {
-    const exec_func = is_self_evaluating(stmt)
+    return is_self_evaluating(stmt)
            ? (env, succeed, fail) => succeed(stmt, fail)
          : is_name(stmt)
            ? analyze_name(stmt)
@@ -770,8 +761,6 @@ function analyze(stmt) {
          : is_boolean_operation(stmt)
            ? analyze_boolean_op(stmt)
            : error(stmt, "Unknown statement type in analyze");
-
-    return update_exec_env(exec_func);
 }
 
 function ambeval(exp, env, succeed, fail) {
