@@ -1,7 +1,45 @@
 /*
-Evaluator for a non-deterministic language with booleans, conditionals,
-sequences, functions, constants, variables and blocks.
+
+This is an evaluator for "non deterministic Source", which is a
+non-deterministic version of the Source 2 language.
+This evaluated is based on SICP JS section 4.3.
+
+The Source 2 language has constants, lists, variables, conditionals, 
+sequences, functions and blocks. These constructs are included in
+non deterministic Source.
+
+Non deterministic Source is distinguished from Source 2, by its
+built-in search mechanism. Programmers can use amb expressions to
+specify choices and require statements to specify constraints on
+those choices. The built-in search mechanism will then identify
+all choices that satisfy the given constraints.
+
+The syntax of this language is described by these rules:
+
+stmt    ::= const name = expr ; 
+         |  let name = expr ; 
+         |  function name(params) block
+         |  expr ; 
+         |  stmt stmt
+         |  name = expr ; 
+         |  block
+         |  require(boolean expr) ;
+block   ::= { stmt }
+expr    ::= expr ? expr : expr
+         |  expr binop expr
+         |  unop expr
+         |  name
+         |  number
+         |  expr(expr, expr, ...)
+         |  amb(expr, expr,  ...)
+binop   ::= + | - | * | / | % | < | > | <= | >= 
+         | === | !== |  && | ||
+unop    ::= !
+*/
+
 (examples available on our github repo)
+
+
 /* CONSTANTS: NUMBERS, STRINGS, TRUE, FALSE, NULL */
 
 // constants (numbers, strings, booleans, null)
