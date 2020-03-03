@@ -37,6 +37,10 @@ binop   ::= + | - | * | / | % | < | > | <= | >=
 unop    ::= !
 
 
+A caveat about Source 4.3: literal lists
+(e.g. [1,[2, null]]) are not supported.
+Lists can be created using the `list` function.
+
 (examples available on our github repo)
 */
 
