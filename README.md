@@ -2,7 +2,7 @@
 Non-deterministic metacircular evaluator for the [Source](https://sicp.comp.nus.edu.sg/source/) §1 programming language. <br />
 Implementation is in: [evaluator.js](evaluator.js)
 
-### Run using `parse_and_eval`
+## Run using `parse_and_eval`
 
 Example:
 
@@ -73,7 +73,7 @@ parse_and_eval("const f = amb(1, 2, 3); const g = amb(5, 6, 7); g;");
 // Result: 5, 6, 7, 5, 6, 7, 5, 6, 7 (use the try_again() function)
 ```
 
-### Running Tests
+## Running Tests
 
 1. Copy the code from the following files into the [playground](https://sourceacademy.nus.edu.sg/playground):
     * `evaluator.js`
@@ -82,7 +82,25 @@ parse_and_eval("const f = amb(1, 2, 3); const g = amb(5, 6, 7); g;");
 
 2. Remove one of the two instances of the repeated function `variable_declaration_name` (from `evaluator.js` and `source-test/main.js`)
 
-### Acknowledgements
+## Changes from SICP JS
+This implementation of the evaluator contains several changes from that shown in the textbook. These consist of enhancements as well as bug fixes: <br />
+
+From oldest to newest:
+* Added `analyze_require` - SICP JS exercise 4.45
+* Corrected evaluation of return statements [#3](https://github.com/anubh-v/non-deterministic-source/pull/3)
+* Enabled evaluation of lists [#5](https://github.com/anubh-v/non-deterministic-source/pull/5)
+* Enabled usage with `parse_and_eval`[#6](https://github.com/anubh-v/non-deterministic-source/pull/6)
+* Added tests for deterministic and non-deterministic functionality [#8](https://github.com/anubh-v/non-deterministic-source/pull/8)
+* Added logical operators [#9](https://github.com/anubh-v/non-deterministic-source/pull/9)
+* Removed unused code [#10](https://github.com/anubh-v/non-deterministic-source/pull/10)
+* Improved documentation of some functions [#11](https://github.com/anubh-v/non-deterministic-source/pull/11)
+* Made constants immutable [#13](https://github.com/anubh-v/non-deterministic-source/pull/13)
+* Made `Try Again` return a value [#16](https://github.com/anubh-v/non-deterministic-source/pull/16)
+* Added the unary minus operator [#22](https://github.com/anubh-v/non-deterministic-source/pull/22)
+* Fixed a bug with return statements [#26](https://github.com/anubh-v/non-deterministic-source/pull/26)
+* Added memory to the driver loop [#14](https://github.com/anubh-v/non-deterministic-source/pull/14)
+
+## Acknowledgements
 This metacircular evaluator is built based on [SICP JS, Chapter 4.3](https://sicp.comp.nus.edu.sg/chapters/85)
 
 It also uses the `parse` function of the [Source Academy](https://github.com/source-academy/js-slang)
