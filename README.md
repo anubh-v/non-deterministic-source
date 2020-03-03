@@ -83,7 +83,7 @@ parse_and_eval("const f = amb(1, 2, 3); const g = amb(5, 6, 7); g;");
 2. Remove one of the two instances of the repeated function `variable_declaration_name` (from `evaluator.js` and `source-test/main.js`)
 
 ## Changes from SICP JS
-This implementation of the evaluator contains several changes from that shown in the textbook. These consist of enhancements as well as bug fixes: <br />
+This implementation of the evaluator contains several changes from that shown in the textbook. These consist of enhancements as well as bug fixes. <br />
 
 In descending order of complexity:
 * Added logic to correctly evaluate return statements.
