@@ -1,14 +1,14 @@
 /*
 
-This is an evaluator for "non deterministic Source", which is a
+This is an evaluator for Source 4.3, which is a
 non-deterministic version of the Source 2 language.
 This evaluator is based on SICP JS section 4.3.
 
 The Source 2 language has constants, lists, variables, conditionals, 
-sequences, functions and blocks. These constructs are included in
-non deterministic Source.
+sequences, functions and blocks. These constructs are also included in
+Source 4.3.
 
-Non deterministic Source is distinguished from Source 2, by its
+Source 4.3 is distinguished from Source 2 by its
 built-in search mechanism. Programmers can use amb expressions to
 specify choices and require statements to specify constraints on
 those choices. The built-in search mechanism will then identify
