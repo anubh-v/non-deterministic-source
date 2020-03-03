@@ -1,5 +1,5 @@
 # non-deterministic-source
-Non-deterministic metacircular evaluator for the [Source](https://sicp.comp.nus.edu.sg/source/) §1 programming language.
+Non-deterministic metacircular evaluator for the [Source](https://sicp.comp.nus.edu.sg/source/) §1 programming language. <br />
 Implementation is in: [evaluator.js](evaluator.js)
 
 ### Run using `parse_and_eval`
