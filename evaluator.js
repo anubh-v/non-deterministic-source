@@ -1,7 +1,49 @@
 /*
-Evaluator for a non-deterministic language with booleans, conditionals,
-sequences, functions, constants, variables and blocks.
-(examples available on our github repo)
+
+This is an evaluator for Source 4.3, which is a
+non-deterministic version of the Source 2 language.
+This evaluator is based on SICP JS section 4.3.
+
+The Source 2 language has constants, lists, variables, conditionals, 
+sequences, functions and blocks. These constructs are also included in
+Source 4.3.
+
+Source 4.3 is distinguished from Source 2 by its
+built-in search mechanism. Programmers can use amb expressions to
+specify choices and require statements to specify constraints on
+those choices. The built-in search mechanism will then identify
+all choices that satisfy the given constraints.
+
+The syntax of this language is described by these rules:
+
+stmt    ::= const name = expr ; 
+         |  let name = expr ; 
+         |  function name(params) block
+         |  expr ; 
+         |  stmt stmt
+         |  name = expr ; 
+         |  block
+         |  require(boolean expr) ;
+block   ::= { stmt }
+expr    ::= expr ? expr : expr
+         |  expr binop expr
+         |  unop expr
+         |  name
+         |  number
+         |  expr(expr, expr, ...)
+         |  amb(expr, expr,  ...)
+binop   ::= + | - | * | / | % | < | > | <= | >= 
+         | === | !== |  && | ||
+unop    ::= ! | -
+
+
+A caveat about Source 4.3: literal lists
+(e.g. [1,[2, null]]) are not supported.
+Lists can be created using the `list` function.
+
+(visit our GitHub repo for sample programs)
+*/
+
 /* CONSTANTS: NUMBERS, STRINGS, TRUE, FALSE, NULL */
 
 // constants (numbers, strings, booleans, null)
