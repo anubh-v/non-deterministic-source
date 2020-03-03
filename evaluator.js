@@ -87,7 +87,7 @@ function analyze_amb(exp) {
                 : head(choices)(env,
                                 succeed,
                                 () =>
-                              try_next(tail(choices)));
+                                try_next(tail(choices)));
         }
         return try_next(cfuns);
     };
@@ -279,7 +279,7 @@ function function_environment(f) {
     return list_ref(f, 4);
 }
 
-// evluating a function definition expression
+// evaluating a function definition expression
 // results in a function value. Note that the
 // current environment is stored as the function
 // value's environment
@@ -362,6 +362,10 @@ function analyze_sequence(stmts) {
 
 /* BOOLEAN OPERATIONS (&& and ||) */
 
+// Boolean operators are tagged as 'boolean_operation'
+// by the parser. They have 2 arguments, the 'left_arg'
+// and the 'right_arg'.
+
 function is_boolean_operation(stmt) {
     return is_tagged_list(stmt, "boolean_operation");
 }
@@ -378,6 +382,14 @@ function boolean_op_right_arg(stmt) {
     return list_ref(head(tail(tail(stmt))), 1);
 }
 
+// Evaluation of boolean operators is done in a manner
+// that supports shortcircuiting. For example, when evaluating
+// the expression A && B, if expression A evaluates to false,
+// the success continuation is called with the
+// value "false". The expression B is not evaluated.
+
+// Likewise, in the evaluation of the expression A || B,
+// the expression B is only evaluated if expression A is false.
 function analyze_boolean_op(stmt) {
     const left_hand_expr_func = analyze(boolean_op_left_arg(stmt));
     const right_hand_expr_func = analyze(boolean_op_right_arg(stmt));
