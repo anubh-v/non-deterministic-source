@@ -85,9 +85,9 @@ function analyze_amb(exp) {
             return is_null(choices)
                 ? fail()
                 : head(choices)(env,
-                    succeed,
+                                succeed,
                                 () =>
-                              try_next(tail(choices)));
+                                try_next(tail(choices)));
         }
         return try_next(cfuns);
     };
@@ -279,7 +279,7 @@ function function_environment(f) {
     return list_ref(f, 4);
 }
 
-// evluating a function definition expression
+// evaluating a function definition expression
 // results in a function value. Note that the
 // current environment is stored as the function
 // value's environment
@@ -362,6 +362,10 @@ function analyze_sequence(stmts) {
 
 /* BOOLEAN OPERATIONS (&& and ||) */
 
+// Boolean operators are tagged as 'boolean_operation'
+// by the parser. They have 2 arguments, the 'left_arg'
+// and the 'right_arg'.
+
 function is_boolean_operation(stmt) {
     return is_tagged_list(stmt, "boolean_operation");
 }
@@ -378,6 +382,14 @@ function boolean_op_right_arg(stmt) {
     return list_ref(head(tail(tail(stmt))), 1);
 }
 
+// Evaluation of boolean operators is done in a manner
+// that supports shortcircuiting. For example, when evaluating
+// the expression A && B, if expression A evaluates to false,
+// the success continuation is called with the
+// value "false". The expression B is not evaluated.
+
+// Likewise, in the evaluation of the expression A || B,
+// the expression B is only evaluated if expression A is false.
 function analyze_boolean_op(stmt) {
     const left_hand_expr_func = analyze(boolean_op_left_arg(stmt));
     const right_hand_expr_func = analyze(boolean_op_right_arg(stmt));
@@ -437,6 +449,9 @@ function primitive_implementation(fun) {
    return list_ref(fun, 1);
 }
 
+// To evaluate a function application, we gather the
+// function value and values of all arguments in the continuation
+// passing style, before calling `execute_application`
 function analyze_application(stmt) {
     const function_func = analyze(operator(stmt));
     const arg_funcs = map(analyze, operands(stmt));
@@ -456,20 +471,24 @@ function analyze_application(stmt) {
     };
 }
 
+// get_args accepts a list `arg_funcs` containing an execution function for each
+// argument of a function application. Each execution function is applied in order
+// to evaluate each argument. The success continuation is called
+// once all arguments have been evaluated and stored in a list.
 function get_args(arg_funcs, env, succeed, fail) {
     return is_null(arg_funcs)
         ? succeed(null, fail)
         : head(arg_funcs)(env,
                          // success continuation for this arg_func
-                        (arg, fail2) => {
-                         get_args(tail(arg_funcs),
+                         (arg, fail2) => {
+                             get_args(tail(arg_funcs),
                                       env,
-                              (args, fail3) => {
-                                  succeed(pair(arg, args),fail3);
-                              },
-                                fail2);
-                        },
-                      fail);
+                                      (args, fail3) => {
+                                          succeed(pair(arg, args), fail3);
+                                      },
+                                      fail2);
+                         },
+                         fail);
 }
 
 /* APPLY */
@@ -487,7 +506,7 @@ function get_args(arg_funcs, env, succeed, fail) {
 // the special value no_value_yet.
 
 // One difference is that we do not return the result of function
-// application. Instead, we rely on the "succeed" continuation
+// application. Instead, we rely on the success continuation
 // to use the result.
 
 // Just like deterministic Source, a function application returns
@@ -614,6 +633,12 @@ function assignment_name(stmt) {
 function assignment_value(stmt) {
    return head(tail(tail(stmt)));
 }
+
+// When we evaluate an assignment statement, we
+// have to consider that the search mechanism may eventually
+// backtrack past this assignment. In that case, we need to ensure
+// that the assignment is undone. This requires that we keep track
+// of the previous value of the name.
 function analyze_assignment(stmt) {
     const name = assignment_name(stmt);
     const value_func = analyze(assignment_value(stmt));
@@ -808,9 +833,9 @@ function extend_environment(names, vals, base_env) {
 
 // The workhorse of our evaluator is the analyze function.
 // It dispatches on the kind of statement at hand, and
-// invokes the appropriate analysis. Analysing a statement
-// will return a function that accepts an environment
-// and returns the value of the statement. Note that some
+// invokes the appropriate analysis. Analysing a statement / expression
+// will return an execution function that accepts an environment
+// and returns the value of the statement / expression. Note that some
 // statements may have side effects in addition to the value returned (e.g. assignment).
 
 function analyze(stmt) {
