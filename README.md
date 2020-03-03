@@ -96,7 +96,6 @@ In descending order of complexity:
   The textbook implementation accepts programs via a continuously running prompt.
   In our implementation, users can instead use the `parse_and_eval` and `try_again` functions  to run programs. This allows longer programs to be written easily. [#6](https://github.com/anubh-v/non-deterministic-source/pull/6), [#16](https://github.com/anubh-v/non-deterministic-source/pull/16)
 * Added support for logical operators `&&` and `||`. [#9](https://github.com/anubh-v/non-deterministic-source/pull/9)
-* Added memory to the driver loop. [#14](https://github.com/anubh-v/non-deterministic-source/pull/14)
 * Added the unary minus operator. [#22](https://github.com/anubh-v/non-deterministic-source/pull/22)
 * Prevented re-assignment to constants. [#13](https://github.com/anubh-v/non-deterministic-source/pull/13)
 * Added support for lists via the `list` function. [#5](https://github.com/anubh-v/non-deterministic-source/pull/5)
