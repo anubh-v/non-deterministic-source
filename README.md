@@ -85,20 +85,22 @@ parse_and_eval("const f = amb(1, 2, 3); const g = amb(5, 6, 7); g;");
 ## Changes from SICP JS
 This implementation of the evaluator contains several changes from that shown in the textbook. These consist of enhancements as well as bug fixes: <br />
 
-From oldest to newest:
-* Added `analyze_require` - SICP JS exercise 4.45
-* Corrected evaluation of return statements [#3](https://github.com/anubh-v/non-deterministic-source/pull/3)
-* Enabled evaluation of lists [#5](https://github.com/anubh-v/non-deterministic-source/pull/5)
-* Enabled usage with `parse_and_eval`[#6](https://github.com/anubh-v/non-deterministic-source/pull/6)
-* Added tests for deterministic and non-deterministic functionality [#8](https://github.com/anubh-v/non-deterministic-source/pull/8)
-* Added logical operators [#9](https://github.com/anubh-v/non-deterministic-source/pull/9)
-* Removed unused code [#10](https://github.com/anubh-v/non-deterministic-source/pull/10)
-* Improved documentation of some functions [#11](https://github.com/anubh-v/non-deterministic-source/pull/11)
-* Made constants immutable [#13](https://github.com/anubh-v/non-deterministic-source/pull/13)
-* Made `Try Again` return a value [#16](https://github.com/anubh-v/non-deterministic-source/pull/16)
-* Added the unary minus operator [#22](https://github.com/anubh-v/non-deterministic-source/pull/22)
-* Fixed a bug with return statements [#26](https://github.com/anubh-v/non-deterministic-source/pull/26)
-* Added memory to the driver loop [#14](https://github.com/anubh-v/non-deterministic-source/pull/14)
+In descending order of complexity:
+* Added logic to correctly evaluate return statements.
+  [#3](https://github.com/anubh-v/non-deterministic-source/pull/3), [#26](https://github.com/anubh-v/non-deterministic-source/pull/26)
+* Added tests for deterministic and non-deterministic functionality. [#8](https://github.com/anubh-v/non-deterministic-source/pull/8)
+* Fixed `execute_application` to ensure that when a function is applied, the extended environment includes
+  names declared in the function body.
+* Solved SICP JS exercise 4.45 by implementing `analyze_require`.
+* Provided a more convenient method of running programs.
+  The textbook implementation accepts programs via a continuously running prompt.
+  In our implementation, users can instead use the `parse_and_eval` and `try_again` functions  to run programs. This allows longer programs to be written easily. [#6](https://github.com/anubh-v/non-deterministic-source/pull/6), [#16](https://github.com/anubh-v/non-deterministic-source/pull/16)
+* Added support for logical operators `&&` and `||`. [#9](https://github.com/anubh-v/non-deterministic-source/pull/9)
+* Added memory to the driver loop. [#14](https://github.com/anubh-v/non-deterministic-source/pull/14)
+* Added the unary minus operator. [#22](https://github.com/anubh-v/non-deterministic-source/pull/22)
+* Prevented re-assignment to constants. [#13](https://github.com/anubh-v/non-deterministic-source/pull/13)
+* Added support for lists via the `list` function. [#5](https://github.com/anubh-v/non-deterministic-source/pull/5)
+* Improved documentation of some functions. [#11](https://github.com/anubh-v/non-deterministic-source/pull/11)
 
 ## Acknowledgements
 This metacircular evaluator is built based on [SICP JS, Chapter 4.3](https://sicp.comp.nus.edu.sg/chapters/85)
