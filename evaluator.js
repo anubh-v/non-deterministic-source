@@ -626,6 +626,12 @@ function assignment_name(stmt) {
 function assignment_value(stmt) {
    return head(tail(tail(stmt)));
 }
+
+// When we evaluate an assignment statement, we
+// have to consider that the search mechanism may eventually
+// backtrack past this assignment. In that case, we need to ensure
+// that the assignment is undone. This requires that we keep track
+// of the previous value of the name.
 function analyze_assignment(stmt) {
     const name = assignment_name(stmt);
     const value_func = analyze(assignment_value(stmt));
