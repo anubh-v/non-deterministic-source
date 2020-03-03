@@ -1023,6 +1023,8 @@ function driver_loop() {
         const input = prompt(input_prompt);
         if (input === "try-again") {
             try_again();
+        } else if (input === null) {
+            display("Loop has ended.");
         } else {
             const program_block = make_block(parse(input));
             display("Starting a new problem ");
