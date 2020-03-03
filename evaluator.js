@@ -85,7 +85,7 @@ function analyze_amb(exp) {
             return is_null(choices)
                 ? fail()
                 : head(choices)(env,
-                    succeed,
+                                succeed,
                                 () =>
                               try_next(tail(choices)));
         }
