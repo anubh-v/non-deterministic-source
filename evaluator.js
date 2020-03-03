@@ -2,7 +2,7 @@
 
 This is an evaluator for "non deterministic Source", which is a
 non-deterministic version of the Source 2 language.
-This evaluated is based on SICP JS section 4.3.
+This evaluator is based on SICP JS section 4.3.
 
 The Source 2 language has constants, lists, variables, conditionals, 
 sequences, functions and blocks. These constructs are included in
