@@ -280,18 +280,27 @@ function rest_statements(stmts) {
 }
 
 // to evaluate a sequence, we need to evaluate
-// its statements one after the other, and return
-// the value of the last statement.
+// its statements one after the other. We pass the
+// success continuation to the last statement,
+// because the value of a sequence
+// is the value of its last statement.
+
 // An exception to this rule is when a return
 // statement is encountered. In that case, the
 // remaining statements are ignored and the
-// return value is the value of the sequence.
+// success continuation is called with the return value.
 
 function analyze_sequence(stmts) {
     function sequentially(fun1, fun2) {
         return (env, succeed, fail) => {
                    fun1(env,
-                        (fun1_val, fail2) => fun2(env, succeed, fail2),
+                        (fun1_val, fail2) => {
+                            if (is_return_value(fun1_val)) {
+                                succeed(fun1_val, fail2);
+                            } else {
+                                fun2(env, succeed, fail2);
+                            }
+                        },
                         fail);
                };
     }
@@ -439,6 +448,9 @@ function get_args(arg_funcs, env, succeed, fail) {
 // application. Instead, we rely on the "succeed" continuation
 // to use the result.
 
+// Just like deterministic Source, a function application returns
+// "undefined" if the function body does not contain a return statement.
+
 function execute_application(fun, args, succeed, fail) {
    if (is_primitive_function(fun)) {
       succeed(apply_primitive_function(fun, args), fail);
@@ -451,7 +463,13 @@ function execute_application(fun, args, succeed, fail) {
                               locals);
       const values = append(args, temp_values);
       body(extend_environment(names, values, function_environment(fun)),
-           succeed,
+           (val, fail2) => {
+               if (is_return_value(val)) {
+                   succeed(return_value_content(val), fail2);
+               } else {
+                   succeed(undefined, fail2);
+               }
+           },
            fail);
    } else {
       error(fun, "Unknown function type in apply");
@@ -519,10 +537,27 @@ function return_statement_expression(stmt) {
    return head(tail(stmt));
 }
 
+// since return statements can occur anywhere in the
+// body, we need to identify them during the evaluation
+// process
+function make_return_value(content) {
+    return list("return_value", content);
+}
+
+function is_return_value(value) {
+    return is_tagged_list(value,"return_value");
+}
+
+function return_value_content(value) {
+    return head(tail(value));
+}
+
 function analyze_return_statement(stmt) {
     const retvalue_func = analyze(return_statement_expression(stmt));
     return (env, succeed, fail) => {
-        retvalue_func(env, succeed, fail);
+        retvalue_func(env, 
+                     (val, fail2) => succeed(make_return_value(val), fail2),
+                     fail);
     };
 }
 
