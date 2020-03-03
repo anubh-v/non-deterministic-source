@@ -449,6 +449,9 @@ function primitive_implementation(fun) {
    return list_ref(fun, 1);
 }
 
+// To evaluate a function application, we gather the
+// function value and values of all arguments in the continuation
+// passing style, before calling `execute_application`
 function analyze_application(stmt) {
     const function_func = analyze(operator(stmt));
     const arg_funcs = map(analyze, operands(stmt));
@@ -468,6 +471,10 @@ function analyze_application(stmt) {
     };
 }
 
+// get_args accepts a list `arg_funcs` containing an execution function for each
+// argument of a function application. Each execution function is applied in order
+// to evaluate each argument. The success continuation is called
+// once all arguments have been evaluated and stored in a list.
 function get_args(arg_funcs, env, succeed, fail) {
     return is_null(arg_funcs)
         ? succeed(null, fail)
