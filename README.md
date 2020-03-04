@@ -102,6 +102,7 @@ In descending order of complexity:
 * Improved documentation of some functions. [#11](https://github.com/anubh-v/non-deterministic-source/pull/11)
 
 ## Acknowledgements
-This metacircular evaluator is built based on [SICP JS, Chapter 4.3](https://sicp.comp.nus.edu.sg/chapters/85)
+This metacircular evaluator is built based on [SICP JS, Chapter 4.3](https://sicp.comp.nus.edu.sg/chapters/85).
+We used a metacircular evaluator for Source 1, provided in CS4215 materials, as a starting point for this evaluator.
 
 It also uses the `parse` function of the [Source Academy](https://github.com/source-academy/js-slang)
