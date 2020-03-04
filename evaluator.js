@@ -355,7 +355,7 @@ function analyze_sequence(stmts) {
     }
     const funs = map(analyze, stmts);
     return is_null(funs)
-           ? env => undefined
+           ? (env, succeed, fail) => undefined
            : loop(head(funs), tail(funs));
 
 }
@@ -1048,6 +1048,8 @@ function driver_loop() {
         const input = prompt(input_prompt);
         if (input === "try-again") {
             try_again();
+        } else if (input === null) {
+            display("Loop has ended.");
         } else {
             const program_block = make_block(parse(input));
             display("Starting a new problem ");
@@ -1058,7 +1060,7 @@ function driver_loop() {
                     display(output_prompt + user_print(val));
                     return internal_loop(next_alternative);
                 },
-    // ambeval failure
+                // ambeval failure
                 () => {
                     display("There are no more values of " +
                             user_print(input));
