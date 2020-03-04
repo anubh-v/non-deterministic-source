@@ -1035,7 +1035,7 @@ function driver_loop() {
                     display(output_prompt + user_print(val));
                     return internal_loop(next_alternative);
                 },
-    // ambeval failure
+                // ambeval failure
                 () => {
                     display("There are no more values of " +
                             user_print(input));
