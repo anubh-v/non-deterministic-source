@@ -355,7 +355,7 @@ function analyze_sequence(stmts) {
     }
     const funs = map(analyze, stmts);
     return is_null(funs)
-           ? env => undefined
+           ? (env, succeed, fail) => undefined
            : loop(head(funs), tail(funs));
 
 }
