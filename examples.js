@@ -114,8 +114,8 @@ function multiple_dwelling() {
             require(fletcher !== 5);\
             require(fletcher !== 1);\
             require(miller > cooper);\
-            require(math_abs(smith - fletcher) === 1);\
-            require(math_abs(fletcher - cooper) === 1);\
+            require(math_abs(smith - fletcher) !== 1);\
+            require(math_abs(fletcher - cooper) !== 1);\
             return list(list('baker', baker),\
                         list('cooper', cooper),\
                         list('fletcher', fletcher),\
